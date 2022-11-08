@@ -41,6 +41,8 @@ done
 
 for l_pool in $d_pool ;do
 
+	[ "$s_type" = sp ] && return 0
+
 	local pool_health="$($d_srv $zpool list -H -o health $l_pool)"
 
 	if [ "$pool_health" = ONLINE ] ;then
@@ -75,6 +77,8 @@ printf "\n---------------------------------- do_pool_check2 --------------------
 			# tested (once)
 			
 for i in s d ;do
+
+	[ "$i" = d ] && [ "$s_type" = sp ] && return 0
 
 	local l_srv=${i}_srv
 	local l_pool=${i}_pool
