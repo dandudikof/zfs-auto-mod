@@ -1,5 +1,5 @@
 #
-# checks for existence of lockfile for execution of current *.cfg file
+# checks for existence of lockfile for execution of current script with current *.cfg file
 # exits with 1 if lockfile exist and pid that created it is still running
 # else removes stale lock files, creates new lock files, returns 0 and continues
 #
@@ -9,13 +9,13 @@
 lock_dir="/run/lock/zfs-auto-mod"
 
 pid=$$
+script="$(basename $0)"
 config_file="$(basename $1)"
 config_path="$(readlink -f $1)"
-lock_file="$lock_dir/$config_file.lock"
-pid_file="$lock_dir/$config_file.pid"
+lock_file="$lock_dir/$script/$config_file.lock"
+pid_file="$lock_dir/$script/$config_file.pid"
 
-
-[ ! -d "$lock_dir" ] && mkdir -p "$lock_dir"
+[ ! -d "$lock_dir/$script" ] && mkdir -p "$lock_dir/$script"
 
 
 
@@ -31,12 +31,12 @@ if [ -f $lock_file ] ;then
 	ps -p "$config_pid" > /dev/null 2>&1
 	if [ "$?" = 0 ]  ;then
 	
-		echo "[ERROR] lock files exist for $config_file and script is running , exit 1" 1>&3
+		echo "[ERROR] lock files exist for $script $config_file and script is running , exit 1" 1>&3
 		exit 1
 		
 	else
 	
-		echo "[INFO2] lock files exist for $config_file but are stale , removing" 1>&4
+		echo "[INFO2] lock files exist for $script $config_file but are stale , removing" 1>&4
 		rm "$lock_file"
 		rm "$pid_file"
 	
@@ -44,8 +44,8 @@ if [ -f $lock_file ] ;then
 
 fi
 
-echo "[INFO2] creating lock_file for $config" 1>&4
-echo "[INFO2] creating pid_file for $config" 1>&4
+echo "[INFO2] creating lock_file for $script $config_file" 1>&4
+echo "[INFO2] creating pid_file for $script $config_file" 1>&4
 echo "$config_path" > "$lock_file"
 echo "$pid" > "$pid_file"
 
@@ -62,8 +62,8 @@ printf "\n---------------------------------- do_lock_clear ---------------------
 
 if [ -f $lock_file ] ;then
 	
-		echo "[INFO2] removing lock_file for $config" 1>&4
-		echo "[INFO2] removing pid_file for $config" 1>&4
+		echo "[INFO2] removing lock_file for $script $config" 1>&4
+		echo "[INFO2] removing pid_file for $script $config" 1>&4
 		rm "$lock_file"
 		rm "$pid_file"
 fi
