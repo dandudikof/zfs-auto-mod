@@ -3,10 +3,10 @@
 
 
 #config file and functions
-source $1; [ "$?" != 0 ] && { echo 'no config file'; exit 1; } 
-source $script_dir/fnc_logging.sh; [ "$?" != 0 ] && { echo 'no fnc_logging.sh'; exit 1; } 
-source $script_dir/fnc_sort-list.sh; [ "$?" != 0 ] && { echo 'no fnc_sort_list.sh'; exit 1; } 
-source $script_dir/fnc_remote-check.sh; [ "$?" != 0 ] && { echo 'no fnc_remote_check.sh'; exit 1; } 
+source $1; [ "$?" != 0 ] && { echo 'no config file' 1>&2; exit 1; } 
+source $script_dir/fnc_logging.sh; [ "$?" != 0 ] && { echo 'no fnc_logging.sh' 1>&2; exit 1; } 
+source $script_dir/fnc_sort-list.sh; [ "$?" != 0 ] && { echo 'no fnc_sort_list.sh' 1>&2; exit 1; } 
+source $script_dir/fnc_remote-check.sh; [ "$?" != 0 ] && { echo 'no fnc_remote_check.sh' 1>&2; exit 1; } 
 
 
 
