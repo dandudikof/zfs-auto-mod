@@ -25,9 +25,10 @@ printf "\n---------------------------------- do_lock_check ---------------------
 if [ -f $lock_file ] ;then
 	
 	local config_pid="$(cat $pid_file)"
-	
+	local config_pid_comm="$(ps -p $config_pid -o comm=)"
+		
 	ps -p "$config_pid" > /dev/null 2>&1
-	if [ "$?" = 0 ]  ;then
+	if [ "$?" = 0 ] && [ "$config_pid_comm" = "$script" ] ;then
 	
 		echo "[ERROR] lock files exist for $script $config_file and script is running , exit 1" 1>&3
 		exit 1
