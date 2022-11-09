@@ -69,7 +69,7 @@ for child in "${dataset_i_array[@]}" ;do
 
 		for p in $p_list ;do
 
-			p_snap_num="$($d_zfs get $pfix:snum -s received -H -o value $p)"
+			local p_snap_num="$($d_zfs get $pfix:snum -s received -H -o value $p)"
 
 			if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
 
@@ -136,11 +136,13 @@ for child in "${dataset_i_array[@]}" ;do
 
 			for p in $p_list ;do
 
-				p_snap_num="$($d_zfs get $pfix:snum -s received -H -o value $p)"
+				local p_snap_num="$($d_zfs get $pfix:snum -s received -H -o value $p)"
 
 				if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
+
 					echo "[INFO1] zfs destroy $p" 1>&3
 					$d_zfs destroy $p
+
 				else
 					echo "[INFO2] NOT ok to destroy $p"  1>&4
 				fi
@@ -205,8 +207,10 @@ for child in "${dataset_i_array[@]}" ;do
 				local p_snap_num="$($d_zfs get $pfix:snum -s received -H -o value $p)"
 
 				if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
+
 					echo "[INFO1] zfs destroy $p" 1>&3
 					$d_zfs destroy $p
+
 				else
 					echo "[INFO2] NOT ok to destroy $p"  1>&4
 				fi
@@ -230,5 +234,6 @@ do_everything
 
 
 exit
+
 
 

@@ -59,7 +59,7 @@ for child in "${dataset_i_array[@]}" ;do
 
 		echo "[INFO2] src_set $src_set has NOT been transfered yet , skipping prune" 1>&4
 
-	elif [ "$s_type" = sbp ] || [ "$s_type" = sp ] ;then
+	else
 
 		local pfix_stype="$pfix:stype:1"
 		local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -$s_k)"
@@ -84,14 +84,12 @@ for child in "${dataset_i_array[@]}" ;do
 				$s_zfs destroy $p
 
 			else
+
 				echo "[INFO2] NOT ok to destroy $p"  1>&4
+
 			fi
 
 		done
-
-	else
-
-		echo "[ERROR] got past all checks"  1>&3
 
 	fi
 
@@ -126,9 +124,9 @@ for child in "${dataset_i_array[@]}" ;do
 
 		echo "[INFO2] src_set $src_set has NOT been transfered yet , skipping prune" 1>&4
 
-	elif [ "$s_type" = sbp ] || [ "$s_type" = sp ] ;then
+	else
 
-		for i in m d w ;do
+		for i in m w d ;do
 
 			# just for info
 			local mwdh
@@ -168,10 +166,6 @@ for child in "${dataset_i_array[@]}" ;do
 
 		done
 
-	else
-
-		echo "[ERROR] got past all checks"  1>&3
-
 	fi
 
 	echo "------------------------------------------------------------------------------------" 1>&4
@@ -206,7 +200,7 @@ for child in "${dataset_i_array[@]}" ;do
 
 		echo "[INFO2] src_set $src_set has NOT been transfered yet , skipping prune" 1>&4
 
-	elif [ "$s_type" = sbp ] || [ "$s_type" = sp ] ;then
+	else
 
 		for i in m w d h ;do
 
@@ -249,10 +243,6 @@ for child in "${dataset_i_array[@]}" ;do
 
 		done
 
-	else
-
-		echo "[ERROR] got past all checks"  1>&3
-
 	fi
 
 	echo "------------------------------------------------------------------------------------" 1>&4
@@ -268,5 +258,6 @@ do_everything
 
 
 exit
+
 
 

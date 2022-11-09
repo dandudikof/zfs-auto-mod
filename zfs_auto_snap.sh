@@ -221,7 +221,7 @@ for child in "${dataset_i_array[@]}" ;do
 
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
-		echo "[DEBUG] last_sna = ($last_snap)" 1>&5
+		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
 		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
