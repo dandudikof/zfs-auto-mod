@@ -5,7 +5,7 @@
 #config file and functions
 source $1; [ "$?" != 0 ] && { echo 'no config file' 1>&2; exit 1; }
 source $script_dir/fnc_logging.sh; [ "$?" != 0 ] && { echo 'no fnc_logging.sh' 1>&2; exit 1; }
-
+source $script_dir/fnc_lock-check.sh; [ "$?" != 0 ] && { echo 'no fnc_lock_check.sh' 1>&2; exit 1; }
 source $script_dir/fnc_pool-check.sh; [ "$?" != 0 ] && { echo 'no fnc_pool_check.sh' 1>&2; exit 1; }
 source $script_dir/fnc_remote-check.sh; [ "$?" != 0 ] && { echo 'no fnc_remote_check.sh' 1>&2; exit 1; }
 source $script_dir/fnc_sort-list.sh; [ "$?" != 0 ] && { echo 'no fnc_sort_list.sh' 1>&2; exit 1; }
@@ -26,13 +26,13 @@ echo '==========================================================================
 do_everything() {
 #printf "\n==================================== DO_EVERYTHING ======================================\n\n"
 
-
+				do_lock_check
 				do_pool_check1
 				do_remote_check1
 				do_sort_list"$sort_type" #>/dev/null 3>&1
 				do_backup_sort
-
-
+				
+				do_lock_clear
 
 
 }
@@ -314,5 +314,6 @@ do_everything
 
 
 exit
+
 
 
