@@ -12,7 +12,10 @@ and function recursioning, for easier readability and maintanability of the code
 ## notes (beta)
 * initial release, even though i have been using for a few years, consider it (beta).  
 * only tested on devuan/debian so far (but assume debian based (other?) diststributions should work).  
-* besides bash crontab,date,grep,sed,tail,head,(ssh,ping,etherwake or wakeonlan) are used is the scripts.  
+* besides bash and crontab  
+	cat,date,grep,sed,tail,head,ps,(ssh,ping,etherwake or wakeonlan) are used is the scripts.  
+* tagged an froze features for v1.00.00 (will branch for fixes),  
+	(master continues with new features)
 
 # scripts (descriptions)
 each script can run commands localy or remotely.  
@@ -72,9 +75,11 @@ will replicate specified datasets to destination(s).
 1. duplicate config with d_type=sec and new destination settings, and run backup/prune-dest again)  
 (sec destinations does not set pfix:tsnum, not to confuse source prune which only checks against a single primary)  
 (run secondary backups after primary but before source prunes, so that same snapshots make it over to secondary(s))
+(new config file)
 
 2. or make destination also a source for a new primary destination and run backup and prune-dest again
-(now executing scripts on new source if pushing or new destination if pulling)
+(now executing backup/prune-dest scripts on a new source if pushing or new destination if pulling)
+(new config file)
 
 ### zfs_auto_prune-[src,dest].sh 
 will prune source or destination snapshots (based on snap_type) and config options  
@@ -128,10 +133,24 @@ builds arrays of sets based on supplied s_pool or s_pool/s_sets if set, that scr
 - (dataset) gets snapshots based on snap_type and is alway transfered fully
 - (excluded) excludes the set itself and all children from all operations (snap,back,prune)
 	
-### fnc_remote-check.sh (2 functions )
+### fnc_remote-check.sh (2 versions)
 ping checks source and destination if set as remote. and sends a wake_cmd if configured
 1. just to check if remote server is reachable before starting script 
 2. wake up remote server if needed , wait for server to come up and continue script
+
+### fnc_pool-check.sh (2 versions)
+checks the health status of the s_pool and d_pool
+1. if pool is ONLINE, continue script 
+2. if DEGRADED,SUSPENDED,UNAVAIL send an ERROR to the log and stop script
+
+### fnc_lock-check.sh 
+locking on a peer script peer config file basis
+(can run same script with different configs or other scripts with same config at same time)
+1. checks for an existing lock for current script and current config file
+2. checks if it may be a stale lock, process no longer running (clears them)
+3. checks if if pid of process running was not stolen by some other process
+4. creates new locks if none exist
+5. clears locks when done
 
 # install (no packaging yet)
 simply git clone to your $HOME directory  
@@ -190,8 +209,7 @@ hd=$(date +%H)
 2. (root operation not necessary, but is needed for pool creation and initial zfs deligation)  
 	(look at testing/zfs_test-deligate.sh for minimal zfs permissions needed for unpriviliged user)
 3. (remote source or destination require ssh be configured with paswordless/pubkey login (ssh-copy-id or manualy))
-4. (if datasets are very big , run initial backups manualy, later incrementals are way faster)(no locking yet)  
-	(or schedule a one time run, and then implement the incremental schedule)
+4. Multiple config executions can log to the same log files but only if not ran concurrently  
 5. While simpler uses of the scripts only rely only on a single config file.  
 	- Extended control is achieved trough setting zfs user properties on sets
 		1. pfix:incl=[c,p,d,e]  sets dataset type container,parent,dataset or exluded
@@ -200,9 +218,7 @@ hd=$(date +%H)
 		3. pfix:nsnap:[m,w,d,h]=[0,1] (optional) chooses which snapshots to take (snap_type 3 option)  
 		(no need to set if doing all. 0 to disable some, 1 only to overwrite inherited 0 on children)
 	- Or multiple executions with different config files
-	- And different pfixes (can intermingle multiple configs withing same dataset structure)
-6. Multiple config executions can log to the same log files but only if not ran concurrently
-	- otherwise you get a mess of a logfile.
+	- And-or different pfixes (can intermingle multiple configs withing same dataset structure)
 	
 ## restoring (back to source)
 
@@ -216,18 +232,6 @@ hd=$(date +%H)
 
 # planned (functionality)
 
-- essential
-
-1. zpool status checks (soon)  
-	( checks for scrubing?, resilver and degraded pool status and deal with appropriately)
-2. locking to defer operations if currently running.
-	1. only problem is big initial backups not finishing, before incrementals start  
-	(then do initials manualy)(or schedule first initials friday night and start incrementals on monday)  
-	2. if incrementals do not finish, that is a bigger problem  
-	(need faster networking and or cpu, use simpler ssh cipher or no cipher ssh patches or HPN-SSH patches)
-	
-- later
-
 1. zfs clones (not tested yet)  
 	(but should? work if transfered with originating dataset@snapshot)
 2. zfs volumes (not tested yet)  
@@ -239,13 +243,11 @@ hd=$(date +%H)
 	1. right now list is created right under first level of s_pool or s_pool/s_sets
 	- to narrow down further use container sets for now
 	- or reorganize pool in to managable sections (ideal)
+	- multiple pfixes with different excluded sets for each
 
 7. frequent(continuos) snapshotting and replication (pondering)
 	1. an edge case.
 	- if not planned or done right, can get messy. (which i am trying to avoid)
-	- locking and checks etc.. for things to run smoothly. (too many things to go wrong)
-	- right now no locks are used, just foresight and correct order of execution.
-
 
 
 
