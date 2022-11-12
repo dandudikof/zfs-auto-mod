@@ -164,9 +164,9 @@ d_type=pri
 d_k=24
 
 verbose=1
-logdir=/tmp/$pfix
-log_file3=backup.log
-log_file6=send.log
+log_dir=/tmp/$pfix
+log_file3=$log_dir/backup.log
+log_file6=$log_dir/send.log
 
 DATE=$(date +%Y-%m-%d); TIME=$(date +%T)
 Yn=$(date +%Y); my=$(date +%m); wy=$(date +%W)

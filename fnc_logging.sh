@@ -13,10 +13,10 @@
 # 9 = recv  	= exec		9>>		$log3				# formating for zfs recv
 
 
-log3="$logdir/$log_file3"
-log6="$logdir/$log_file6"
+log3="$log_file3"
+log6="$log_file6"
 
-[ ! -d "$logdir" ] && mkdir -p "$logdir"
+[ ! -d "$log_dir" ] && mkdir -p "$log_dir"
 [ ! -f "$log3" ] &&	touch "$log3"
 [ ! -f "$log6" ] &&	touch "$log6"
 
