@@ -29,9 +29,8 @@ for lset in $lsets ; do
 
 		[ "$src_child" = "$s_pool" ] && continue
 
-		[ "$strip_pool"  = 1 ] && dest_a_array+=([$child]="$d_path/${child#${s_pool}/}")
-		[ "$strip_pool" != 1 ] && dest_a_array+=([$child]="$d_path/${child}")
-
+		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
+		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
@@ -43,6 +42,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					parent_i_array+=($src_child)
 					include_a_array+=([$src_child]=p)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to parent and include array : $src_child"
 
 		elif [ "$lret" = "c" ] ;then
@@ -50,6 +50,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					container_i_array+=($src_child)
 					include_a_array+=([$src_child]=c)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to container and include array : $src_child"
 
 		elif [ "$lret" = "d" ] || [ "$iret" = "d" ] || [ "$iret" = "p" ] || [ "$iret" = "c" ] ;then
@@ -57,6 +58,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to dataset and include array : $src_child"
 
 		elif [ "$lret" = "e" ] || [ "$iret" = "e" ] ;then
@@ -69,6 +71,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to dataset and include array : $src_child"
 
 		fi
@@ -109,8 +112,8 @@ for lset in $lsets ; do
 
 		[ "$src_child" = "$s_pool" ] && continue
 
-		[ "$strip_pool"  = 1 ] && dest_a_array+=([$child]="$d_path/${child#${s_pool}/}")
-		[ "$strip_pool" != 1 ] && dest_a_array+=([$child]="$d_path/${child}")
+		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
+		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
@@ -122,6 +125,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					parent_i_array+=($src_child)
 					include_a_array+=([$src_child]=p)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to parent and include array : $src_child"
 
 		elif [ "$lret" = "c" ] ;then
@@ -129,6 +133,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					container_i_array+=($src_child)
 					include_a_array+=([$src_child]=c)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to container and include array : $src_child"
 
 		elif [ "$lret" = "d" ] || [ "$iret" = "d" ] || [ "$iret" = "p" ] || [ "$iret" = "c" ] ;then
@@ -136,6 +141,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to dataset and include array : $src_child"
 
 		elif [ "$lret" = "e" ] || [ "$iret" = "e" ] ;then
@@ -148,6 +154,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to dataset and include array : $src_child"
 
 		fi
@@ -188,8 +195,8 @@ for lset in $lsets ; do
 
 		[ "$src_child" = "$s_pool" ] && continue
 
-		[ "$strip_pool"  = 1 ] && dest_a_array+=([$child]="$d_path/${child#${s_pool}/}")
-		[ "$strip_pool" != 1 ] && dest_a_array+=([$child]="$d_path/${child}")
+		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
+		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 
@@ -199,6 +206,7 @@ for lset in $lsets ; do
 						include_i_array+=($src_child)
 						parent_i_array+=($src_child)
 						include_a_array+=([$src_child]=p)
+						dest_a_array+=([$src_child]="$dest_child")
 						#echo "adding to parent and include array : $src_child"
 			;;
 
@@ -206,6 +214,7 @@ for lset in $lsets ; do
 						include_i_array+=($src_child)
 						container_i_array+=($src_child)
 						include_a_array+=([$src_child]=c)
+						dest_a_array+=([$src_child]="$dest_child")
 						#echo "adding to container and include array : $src_child"
 			;;
 
@@ -213,6 +222,7 @@ for lset in $lsets ; do
 						include_i_array+=($src_child)
 						dataset_i_array+=($src_child)
 						include_a_array+=([$src_child]=d)
+						dest_a_array+=([$src_child]="$dest_child")
 						#echo "adding to dataset and include array : $src_child"
 			;;
 
