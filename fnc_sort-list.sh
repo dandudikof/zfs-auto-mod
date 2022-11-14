@@ -22,47 +22,47 @@ parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
 for lset in $lsets ; do
-	for child in $($s_zfs list -Hr -o name $lset) ;do
+	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
-		[ "$child" = "$s_pool" ] && continue
+		[ "$src_child" = "$s_pool" ] && continue
 
-		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $child)"
-		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $child)"
+		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
+		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
 		
-		[ "$child" = "$lset" ] && [ -z "$lret" ] && lret=d
+		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=d
 
 		if [ "$lret" = "p" ] ;then
 
-					include_i_array+=($child)
-					parent_i_array+=($child)
-					include_a_array+=([$child]=p)
-					#echo "adding to parent and include array : $child"
+					include_i_array+=($src_child)
+					parent_i_array+=($src_child)
+					include_a_array+=([$src_child]=p)
+					#echo "adding to parent and include array : $src_child"
 
 		elif [ "$lret" = "c" ] ;then
 
-					include_i_array+=($child)
-					container_i_array+=($child)
-					include_a_array+=([$child]=c)
-					#echo "adding to container and include array : $child"
+					include_i_array+=($src_child)
+					container_i_array+=($src_child)
+					include_a_array+=([$src_child]=c)
+					#echo "adding to container and include array : $src_child"
 
 		elif [ "$lret" = "d" ] || [ "$iret" = "d" ] || [ "$iret" = "p" ] || [ "$iret" = "c" ] ;then
 
-					include_i_array+=($child)
-					dataset_i_array+=($child)
-					include_a_array+=([$child]=d)
-					#echo "adding to dataset and include array : $child"
+					include_i_array+=($src_child)
+					dataset_i_array+=($src_child)
+					include_a_array+=([$src_child]=d)
+					#echo "adding to dataset and include array : $src_child"
 
 		elif [ "$lret" = "e" ] || [ "$iret" = "e" ] ;then
 
-					exclude_i_array+=($child)
-					#echo "adding to exclude array : $child"
+					exclude_i_array+=($src_child)
+					#echo "adding to exclude array : $src_child"
 
 		else
 
-					include_i_array+=($child)
-					dataset_i_array+=($child)
-					include_a_array+=([$child]=d)
-					#echo "adding to dataset and include array : $child"
+					include_i_array+=($src_child)
+					dataset_i_array+=($src_child)
+					include_a_array+=([$src_child]=d)
+					#echo "adding to dataset and include array : $src_child"
 
 		fi
 
@@ -96,47 +96,47 @@ parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
 for lset in $lsets ; do
-	for child in $($s_zfs list -Hr -o name $lset) ;do
+	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
-		[ "$child" = "$s_pool" ] && continue
+		[ "$src_child" = "$s_pool" ] && continue
 
-		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $child)"
-		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $child)"
+		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
+		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
 		
-		[ "$child" = "$lset" ] && [ -z "$lret" ] && lret=p
+		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=p
 
 		if [ "$lret" = "p" ]  ;then
 
-					include_i_array+=($child)
-					parent_i_array+=($child)
-					include_a_array+=([$child]=p)
-					#echo "adding to parent and include array : $child"
+					include_i_array+=($src_child)
+					parent_i_array+=($src_child)
+					include_a_array+=([$src_child]=p)
+					#echo "adding to parent and include array : $src_child"
 
 		elif [ "$lret" = "c" ] ;then
 
-					include_i_array+=($child)
-					container_i_array+=($child)
-					include_a_array+=([$child]=c)
-					#echo "adding to container and include array : $child"
+					include_i_array+=($src_child)
+					container_i_array+=($src_child)
+					include_a_array+=([$src_child]=c)
+					#echo "adding to container and include array : $src_child"
 
 		elif [ "$lret" = "d" ] || [ "$iret" = "d" ] || [ "$iret" = "p" ] || [ "$iret" = "c" ] ;then
 
-					include_i_array+=($child)
-					dataset_i_array+=($child)
-					include_a_array+=([$child]=d)
-					#echo "adding to dataset and include array : $child"
+					include_i_array+=($src_child)
+					dataset_i_array+=($src_child)
+					include_a_array+=([$src_child]=d)
+					#echo "adding to dataset and include array : $src_child"
 
 		elif [ "$lret" = "e" ] || [ "$iret" = "e" ] ;then
 
-					exclude_i_array+=($child)
-					#echo "adding to exclude array : $child"
+					exclude_i_array+=($src_child)
+					#echo "adding to exclude array : $src_child"
 
 		else
 
-					include_i_array+=($child)
-					dataset_i_array+=($child)
-					include_a_array+=([$child]=d)
-					#echo "adding to dataset and include array : $child"
+					include_i_array+=($src_child)
+					dataset_i_array+=($src_child)
+					include_a_array+=([$src_child]=d)
+					#echo "adding to dataset and include array : $src_child"
 
 		fi
 
@@ -170,43 +170,43 @@ parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
 for lset in $lsets ; do
-	for child in $($s_zfs list -Hr -o name $lset) ;do
+	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
-		[ "$child" = "$s_pool" ] && continue
+		[ "$src_child" = "$s_pool" ] && continue
 
-		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $child)"
+		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 
 		case "$lret" in
 
 			p)
-						include_i_array+=($child)
-						parent_i_array+=($child)
-						include_a_array+=([$child]=p)
-						#echo "adding to parent and include array : $child"
+						include_i_array+=($src_child)
+						parent_i_array+=($src_child)
+						include_a_array+=([$src_child]=p)
+						#echo "adding to parent and include array : $src_child"
 			;;
 
 			c)
-						include_i_array+=($child)
-						container_i_array+=($child)
-						include_a_array+=([$child]=c)
-						#echo "adding to container and include array : $child"
+						include_i_array+=($src_child)
+						container_i_array+=($src_child)
+						include_a_array+=([$src_child]=c)
+						#echo "adding to container and include array : $src_child"
 			;;
 
 			d)
-						include_i_array+=($child)
-						dataset_i_array+=($child)
-						include_a_array+=([$child]=d)
-						#echo "adding to dataset and include array : $child"
+						include_i_array+=($src_child)
+						dataset_i_array+=($src_child)
+						include_a_array+=([$src_child]=d)
+						#echo "adding to dataset and include array : $src_child"
 			;;
 
 			e)
-						exclude_i_array+=($child)
-						#echo "adding to exclude array : $child"
+						exclude_i_array+=($src_child)
+						#echo "adding to exclude array : $src_child"
 			;;
 
 			*)
-						exclude_i_array+=($child)
-						#echo "adding to exclude array : $child"
+						exclude_i_array+=($src_child)
+						#echo "adding to exclude array : $src_child"
 			;;
 
 
