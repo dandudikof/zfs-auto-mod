@@ -47,7 +47,7 @@ printf "\n---------------------------------- do_prune_dest1 --------------------
 for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
-	local dest_set="$d_path/$child"
+	local dest_set="${dest_a_array[$child]}"
 	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
 
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
@@ -105,7 +105,7 @@ printf "\n---------------------------------- do_prune_dest2 --------------------
 for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
-	local dest_set="$d_path/$child"
+	local dest_set="${dest_a_array[$child]}"
 	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
 
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
@@ -174,7 +174,7 @@ printf "\n---------------------------------- do_prune_dest3 --------------------
 for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
-	local dest_set="$d_path/$child"
+	local dest_set="${dest_a_array[$child]}"
 	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
 
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5

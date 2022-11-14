@@ -21,10 +21,17 @@ include_i_array+=($s_pool)
 parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
+[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
+[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
+
 for lset in $lsets ; do
 	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
 		[ "$src_child" = "$s_pool" ] && continue
+
+		[ "$strip_pool"  = 1 ] && dest_a_array+=([$child]="$d_path/${child#${s_pool}/}")
+		[ "$strip_pool" != 1 ] && dest_a_array+=([$child]="$d_path/${child}")
+
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
@@ -95,10 +102,16 @@ include_i_array+=($s_pool)
 parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
+[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
+[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
+
 for lset in $lsets ; do
 	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
 		[ "$src_child" = "$s_pool" ] && continue
+
+		[ "$strip_pool"  = 1 ] && dest_a_array+=([$child]="$d_path/${child#${s_pool}/}")
+		[ "$strip_pool" != 1 ] && dest_a_array+=([$child]="$d_path/${child}")
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
@@ -169,10 +182,16 @@ include_i_array+=($s_pool)
 parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
+[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
+[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
+
 for lset in $lsets ; do
 	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
 		[ "$src_child" = "$s_pool" ] && continue
+
+		[ "$strip_pool"  = 1 ] && dest_a_array+=([$child]="$d_path/${child#${s_pool}/}")
+		[ "$strip_pool" != 1 ] && dest_a_array+=([$child]="$d_path/${child}")
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 
@@ -271,6 +290,7 @@ declare -ag container_i_array
 declare -ag dataset_i_array
 declare -ag exclude_i_array
 declare -Ag include_a_array
+declare -Ag dest_a_array
 
 }
 
