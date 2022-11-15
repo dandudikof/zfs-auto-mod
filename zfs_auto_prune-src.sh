@@ -2,25 +2,25 @@
 
 
 
-#config file and functions
-source $1; [ "$?" != 0 ] && { echo 'no config file' 1>&2; exit 1; }
-source $script_dir/fnc_logging.sh; [ "$?" != 0 ] && { echo 'no fnc_logging.sh' 1>&2; exit 1; }
-source $script_dir/fnc_lock-check.sh; [ "$?" != 0 ] && { echo 'no fnc_lock_check.sh' 1>&2; exit 1; }
-source $script_dir/fnc_pool-check.sh; [ "$?" != 0 ] && { echo 'no fnc_pool_check.sh' 1>&2; exit 1; }
-source $script_dir/fnc_remote-check.sh; [ "$?" != 0 ] && { echo 'no fnc_remote_check.sh' 1>&2; exit 1; }
-source $script_dir/fnc_sort-list.sh; [ "$?" != 0 ] && { echo 'no fnc_sort_list.sh' 1>&2; exit 1; }
+[ -z $1 ] && { echo "[ERROR] $(basename $0) NO config file provided" 1>&2; exit 1; }
+source $1 || { echo "[ERROR] $(basename $0) could NOT load config file" 1>&2; exit 1; }
 
 
 
 
 
+printf "\n" >> $log_file3
+echo '================================================================================================' >> $log_file3
+echo "[$DATE] [$TIME] ---------------- PRUNE SRC ---------------- $1" >> $log_file3
+echo '================================================================================================' >> $log_file3
 
-printf "\n" 1>&3
-echo '================================================================================================' 1>&3
-echo "[$DATE] [$TIME] ---------------- PRUNE SRC ---------------- $1" 1>&3
-echo '================================================================================================' 1>&3
-#printf "\n"
 
+source $script_dir/fnc_lock-check.sh || { echo '[ERROR] NOT loaded (fnc_lock-check.sh) ' >> $log_file3; fnc_err=1; }
+source $script_dir/fnc_pool-check.sh || { echo '[ERROR] NOT loaded (fnc_pool-check.sh)' >> $log_file3; fnc_err=1; }
+source $script_dir/fnc_remote-check.sh || { echo '[ERROR] NOT loaded (fnc_remote-check.sh)' >> $log_file3; fnc_err=1; }
+source $script_dir/fnc_sort-list.sh || { echo '[ERROR] NOT loaded (fnc_sort-list.sh)' >> $log_file3; fnc_err=1; }
+source $script_dir/fnc_logging.sh || { echo '[ERROR] NOT loaded (fnc_logging.sh)' >> $log_file3; fnc_err=1; }
+[ "$fnc_err" = 1 ] && { echo "[ERROR] NOT running ($(basename $0)) script, missing functions" >> $log_file3; exit 1; }
 
 
 do_everything() {
