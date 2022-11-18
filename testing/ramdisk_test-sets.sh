@@ -17,7 +17,7 @@ $zfs create pool1/type1/parent
 $zfs create pool1/type1/parent/dataset1
 
 $zfs set auto:incl=c pool1/type1/container
-$zfs set auto:incl=e pool1/type1/excluded
+$zfs set auto:excl=1 pool1/type1/excluded
 $zfs set auto:incl=p pool1/type1/parent
 
 #for sort type2 snap type2
@@ -32,7 +32,7 @@ $zfs create pool1/type2/parent
 $zfs create pool1/type2/parent/dataset1
 
 $zfs set auto:incl=c pool1/type2/container
-$zfs set auto:incl=e pool1/type2/excluded
+$zfs set auto:excl=1 pool1/type2/excluded
 $zfs set auto:incl=p pool1/type2/parent
 
 #for sort type3 snap type3
