@@ -34,16 +34,22 @@ for lset in $lsets ; do
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
+		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
 		
 		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=d
 
-		if [ "$lret" = "p" ] ;then
+		if [ "$excl" = "1" ] ;then
+
+					exclude_i_array+=($src_child)
+					#echo "[SORT] classified as excluded ($src_child)"
+		
+		elif [ "$lret" = "p" ] ;then
 
 					include_i_array+=($src_child)
 					parent_i_array+=($src_child)
 					include_a_array+=([$src_child]=p)
 					dest_a_array+=([$src_child]="$dest_child")
-					#echo "adding to parent and include array : $src_child"
+					#echo "[SORT] classified as parent ($src_child)"
 
 		elif [ "$lret" = "c" ] ;then
 
@@ -51,20 +57,7 @@ for lset in $lsets ; do
 					container_i_array+=($src_child)
 					include_a_array+=([$src_child]=c)
 					dest_a_array+=([$src_child]="$dest_child")
-					#echo "adding to container and include array : $src_child"
-
-		elif [ "$lret" = "d" ] || [ "$iret" = "d" ] || [ "$iret" = "p" ] || [ "$iret" = "c" ] ;then
-
-					include_i_array+=($src_child)
-					dataset_i_array+=($src_child)
-					include_a_array+=([$src_child]=d)
-					dest_a_array+=([$src_child]="$dest_child")
-					#echo "adding to dataset and include array : $src_child"
-
-		elif [ "$lret" = "e" ] || [ "$iret" = "e" ] ;then
-
-					exclude_i_array+=($src_child)
-					#echo "adding to exclude array : $src_child"
+					#echo "[SORT] classified as container ($src_child)"
 
 		else
 
@@ -72,11 +65,12 @@ for lset in $lsets ; do
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
 					dest_a_array+=([$src_child]="$dest_child")
-					#echo "adding to dataset and include array : $src_child"
+					#echo "[SORT] classified as else-dataset ($src_child)"
 
 		fi
 
 	done
+
 done
 
 do_verblist
@@ -117,16 +111,22 @@ for lset in $lsets ; do
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
-		
+		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
+
 		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=p
 
-		if [ "$lret" = "p" ]  ;then
+		if [ "$excl" = "1" ] ;then
+
+					exclude_i_array+=($src_child)
+					#echo "[SORT] classified as excluded ($src_child)"
+		
+		elif [ "$lret" = "p" ] ;then
 
 					include_i_array+=($src_child)
 					parent_i_array+=($src_child)
 					include_a_array+=([$src_child]=p)
 					dest_a_array+=([$src_child]="$dest_child")
-					#echo "adding to parent and include array : $src_child"
+					#echo "[SORT] classified as parent ($src_child)"
 
 		elif [ "$lret" = "c" ] ;then
 
@@ -134,20 +134,7 @@ for lset in $lsets ; do
 					container_i_array+=($src_child)
 					include_a_array+=([$src_child]=c)
 					dest_a_array+=([$src_child]="$dest_child")
-					#echo "adding to container and include array : $src_child"
-
-		elif [ "$lret" = "d" ] || [ "$iret" = "d" ] || [ "$iret" = "p" ] || [ "$iret" = "c" ] ;then
-
-					include_i_array+=($src_child)
-					dataset_i_array+=($src_child)
-					include_a_array+=([$src_child]=d)
-					dest_a_array+=([$src_child]="$dest_child")
-					#echo "adding to dataset and include array : $src_child"
-
-		elif [ "$lret" = "e" ] || [ "$iret" = "e" ] ;then
-
-					exclude_i_array+=($src_child)
-					#echo "adding to exclude array : $src_child"
+					#echo "[SORT] classified as container ($src_child)"
 
 		else
 
@@ -155,11 +142,12 @@ for lset in $lsets ; do
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
 					dest_a_array+=([$src_child]="$dest_child")
-					#echo "adding to dataset and include array : $src_child"
+					#echo "[SORT] classified as else-dataset ($src_child)"
 
 		fi
 
 	done
+
 done
 
 do_verblist
@@ -199,6 +187,9 @@ for lset in $lsets ; do
 		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
+		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
+
+		[ "$excl" = 1 ] && unset lret
 
 		case "$lret" in
 
@@ -207,7 +198,7 @@ for lset in $lsets ; do
 						parent_i_array+=($src_child)
 						include_a_array+=([$src_child]=p)
 						dest_a_array+=([$src_child]="$dest_child")
-						#echo "adding to parent and include array : $src_child"
+						#echo "[SORT] classified as parent ($src_child)"
 			;;
 
 			c)
@@ -215,7 +206,7 @@ for lset in $lsets ; do
 						container_i_array+=($src_child)
 						include_a_array+=([$src_child]=c)
 						dest_a_array+=([$src_child]="$dest_child")
-						#echo "adding to container and include array : $src_child"
+						#echo "[SORT] classified as container ($src_child)"
 			;;
 
 			d)
@@ -223,23 +214,20 @@ for lset in $lsets ; do
 						dataset_i_array+=($src_child)
 						include_a_array+=([$src_child]=d)
 						dest_a_array+=([$src_child]="$dest_child")
-						#echo "adding to dataset and include array : $src_child"
-			;;
-
-			e)
-						exclude_i_array+=($src_child)
-						#echo "adding to exclude array : $src_child"
+						#echo "[SORT] classified as dataset ($src_child)"
 			;;
 
 			*)
 						exclude_i_array+=($src_child)
-						#echo "adding to exclude array : $src_child"
+						#echo "[SORT] classified as else ($src_child)"
 			;;
 
 
 
 		esac
+
 	done
+
 done
 
 do_verblist
@@ -291,7 +279,7 @@ printf "\n---------------------------------- do_print_include_a_array ----------
 
 	printf '[LIST2] %20s\n' "include_a_array :" 1>&3
 
-	for i in ${include_i_array[@]} ;do
+	for i in ${!include_a_array[@]} ;do
 		printf '[LIST2] %18s = %s\n' "${include_a_array[$i]}" "$i" 1>&3
 	done
 
@@ -307,7 +295,7 @@ printf "\n---------------------------------- do_print_dest_a_array -------------
 
 	printf '[LIST3] %20s\n' "dest_a_array :" 1>&3
 
-	for i in ${include_i_array[@]} ;do
+	for i in ${!dest_a_array[@]} ;do
 		printf '[LIST3] %18s = %s\n' "src <"  "$i" 1>&3
 		printf '[LIST3] %18s = %s\n' "dest >" "${dest_a_array[$i]}" 1>&3
 	done
