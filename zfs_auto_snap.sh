@@ -100,7 +100,7 @@ for child in "${dataset_i_array[@]}" ;do
 	local pfix_stype="$pfix:stype:1"
 	local pfix_sdate="$pfix:sdate:$Yn:$my:$wy:$dm:$hd"
 	local snap_check="$($s_zfs get $pfix_sdate -t snapshot -s local,received -H -o name $src_set)"
-	local minws_check="$($s_zfs get $pfix:minws -t filesystem -s local,received,inherited -H -o value $src_set)"
+	local minws_check="$($s_zfs get $pfix:minws -s local,received,inherited -H -o value $src_set)"
 	local current_snap="$src_set@${pfix}-t1-${DATE}_${TIME}-n$snap_num"
 
 	[ -z "$minws_check" ] && minws_check=0
@@ -246,7 +246,7 @@ for child in "${dataset_i_array[@]}" ;do
 		((snap_num++))
 		
 		local pfix_stype="$pfix:stype:3:$i"
-		local need_snap="$($s_zfs get $pfix:nsnap:$i -t filesystem -s local,received,inherited -H -o value $src_set)"
+		local need_snap="$($s_zfs get $pfix:nsnap:$i -s local,received,inherited -H -o value $src_set)"
 		local snap_check="$($s_zfs get $pfix_sdate -t snapshot -s local,received -H -o name $src_set)"
 		local current_snap="$src_set@${pfix}-t3-${DATE}_${TIME}-${i}"
 
