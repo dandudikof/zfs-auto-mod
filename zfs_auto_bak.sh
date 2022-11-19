@@ -43,7 +43,7 @@ do_backup_sort() {
 #printf "\n---------------------------------- do_backup_sort --------------------------------------\n" 1>&4
 		# walk the include list in order and call apropriate function
 
-do_backup_container "$d_path"
+[ "$d_path" != "$d_pool" ] && do_backup_container "$d_path"
 
 for i in "${include_i_array[@]}" ;do
 
@@ -77,7 +77,7 @@ printf "\n---------------------------------- do_backup_container ---------------
 		# checks for and creates d_path and container sets
 
 local src_set=$1
-local dest_set=$d_path/$1
+local dest_set=${dest_a_array[$1]}
 
 [ "$src_set" = "$d_path" ] && dest_set=$d_path # do not append src_set if src_set is d_path
 
@@ -109,7 +109,7 @@ printf "\n---------------------------------- do_backup_parent ------------------
 
 
 local src_set="$1"
-local dest_set="$d_path/$1"
+local dest_set=${dest_a_array[$1]}
 
 	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 	echo "[DEBUG] src_set = ($src_set)" 1>&5
@@ -159,7 +159,12 @@ printf "\n---------------------------------- do_backup_dataset -----------------
 
 
 local src_set="$1"
-local dest_set="$d_path/$1"
+local dest_set=${dest_a_array[$1]}
+
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	echo "[DEBUG] src_set = ($src_set)" 1>&5
+	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? != 0 ] ; then
@@ -180,7 +185,7 @@ if [ $? != 0 ] ; then
 	echo "[INFO1] zfs send $head_snap" 1>&3
 
 	echo "------------------------------------------------------------------------------------" 1>&9
-	$s_zfs send -pv $head_snap 2>&6 | $d_zfs recv -uv $d_path/$src_set 1>&8
+	$s_zfs send -pv $head_snap 2>&6 | $d_zfs recv -uv $dest_set 1>&8
 	local ret=( "${PIPESTATUS[@]}" )
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------" 1>&9
@@ -212,19 +217,19 @@ fi
 ########## find last matching src and dest snapshots for incr send 
 
 
-local snap
+for src_snap in $($s_zfs list -t snapshot -H -o name $src_set | tac ) ;do
 
-for snap in $($s_zfs list -t snapshot -H -o name $src_set | tac ) ;do
+		local snap="${src_snap#$src_set@}"
 
-	$d_zfs list -t snapshot -H -o name $d_path/$snap > /dev/null 2>&1
+	$d_zfs list -t snapshot -H -o name $dest_set@$snap > /dev/null 2>&1
 	if [ $? = 0 ] ; then
 
-		s_guid="$($s_zfs get guid -t snapshot -H -o value $snap)"
-		d_guid="$($d_zfs get guid -t snapshot -H -o value $d_path/$snap)"
+		local s_guid="$($s_zfs get guid -t snapshot -H -o value $src_snap)"
+		local d_guid="$($d_zfs get guid -t snapshot -H -o value $dest_set@$snap)"
 
 		if [ "$s_guid" = "$d_guid" ] ; then
 
-			local match_snap="$snap"
+			local match_snap="$src_snap"
 			break
 
 		fi
@@ -232,6 +237,14 @@ for snap in $($s_zfs list -t snapshot -H -o name $src_set | tac ) ;do
 	fi
 
 done
+
+
+if [ -z "$match_snap" ] ;then
+
+		echo "[ERROR] match_snap NOT found for $src_set" 1>&3
+		echo "[ERROR] can NOT do incr send for $src_set" 1>&3
+		return
+fi
 
 
 
@@ -254,7 +267,7 @@ if [ $? = 0 ] ; then
 		echo "[DEBUG] last_trans_snap = $last_trans_snap" 1>&5
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-	if [ -n "$match_snap" ] && [ "$last_snap" != "$match_snap" ] ;then
+	if [ "$last_snap" != "$match_snap" ] ;then
 
 	printf "\n---------------------------------- ( incr send ) -----------------------------------\n" 1>&4
 	printf "\n---------------------------------- ( incr send ) -----------------------------------\n" 1>&7
@@ -283,19 +296,10 @@ if [ $? = 0 ] ; then
 
 		fi
 
-	elif  [ "$last_snap" = "$match_snap" ]  ;then
+	else
 
 		echo "[INFO2] last snapshot $last_snap = match_snap."	1>&4
 		echo "[INFO2] NO need to send $last_snap."	1>&4
-
-	elif [ -z "$match_snap" ] ;then
-
-		echo "[ERROR] match_snap NOT found for $src_set" 1>&3
-		echo "[ERROR] can NOT do incr send for $src_set" 1>&3
-
-	else
-
-		echo "[ERROR] got past all check for $src_set , what happened?" 1>&3
 
 	fi
 
