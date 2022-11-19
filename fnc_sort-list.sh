@@ -21,10 +21,16 @@ include_i_array+=($s_pool)
 parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
+[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
+[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
+
 for lset in $lsets ; do
 	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
 		[ "$src_child" = "$s_pool" ] && continue
+
+		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
+		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
@@ -36,6 +42,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					parent_i_array+=($src_child)
 					include_a_array+=([$src_child]=p)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to parent and include array : $src_child"
 
 		elif [ "$lret" = "c" ] ;then
@@ -43,6 +50,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					container_i_array+=($src_child)
 					include_a_array+=([$src_child]=c)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to container and include array : $src_child"
 
 		elif [ "$lret" = "d" ] || [ "$iret" = "d" ] || [ "$iret" = "p" ] || [ "$iret" = "c" ] ;then
@@ -50,6 +58,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to dataset and include array : $src_child"
 
 		elif [ "$lret" = "e" ] || [ "$iret" = "e" ] ;then
@@ -62,6 +71,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to dataset and include array : $src_child"
 
 		fi
@@ -69,8 +79,7 @@ for lset in $lsets ; do
 	done
 done
 
-[ "$verblist" = 1 ] && do_print_i_array
-[ "$verblist" = 2 ] && do_print_a_array
+do_verblist
 
 }
 
@@ -95,10 +104,16 @@ include_i_array+=($s_pool)
 parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
+[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
+[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
+
 for lset in $lsets ; do
 	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
 		[ "$src_child" = "$s_pool" ] && continue
+
+		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
+		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
@@ -110,6 +125,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					parent_i_array+=($src_child)
 					include_a_array+=([$src_child]=p)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to parent and include array : $src_child"
 
 		elif [ "$lret" = "c" ] ;then
@@ -117,6 +133,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					container_i_array+=($src_child)
 					include_a_array+=([$src_child]=c)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to container and include array : $src_child"
 
 		elif [ "$lret" = "d" ] || [ "$iret" = "d" ] || [ "$iret" = "p" ] || [ "$iret" = "c" ] ;then
@@ -124,6 +141,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to dataset and include array : $src_child"
 
 		elif [ "$lret" = "e" ] || [ "$iret" = "e" ] ;then
@@ -136,6 +154,7 @@ for lset in $lsets ; do
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
 					include_a_array+=([$src_child]=d)
+					dest_a_array+=([$src_child]="$dest_child")
 					#echo "adding to dataset and include array : $src_child"
 
 		fi
@@ -143,8 +162,7 @@ for lset in $lsets ; do
 	done
 done
 
-[ "$verblist" = 1 ] && do_print_i_array
-[ "$verblist" = 2 ] && do_print_a_array
+do_verblist
 
 }
 
@@ -169,10 +187,16 @@ include_i_array+=($s_pool)
 parent_i_array+=($s_pool)
 include_a_array+=([$s_pool]=p)
 
+[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
+[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
+
 for lset in $lsets ; do
 	for src_child in $($s_zfs list -Hr -o name $lset) ;do
 
 		[ "$src_child" = "$s_pool" ] && continue
+
+		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
+		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 
@@ -182,6 +206,7 @@ for lset in $lsets ; do
 						include_i_array+=($src_child)
 						parent_i_array+=($src_child)
 						include_a_array+=([$src_child]=p)
+						dest_a_array+=([$src_child]="$dest_child")
 						#echo "adding to parent and include array : $src_child"
 			;;
 
@@ -189,6 +214,7 @@ for lset in $lsets ; do
 						include_i_array+=($src_child)
 						container_i_array+=($src_child)
 						include_a_array+=([$src_child]=c)
+						dest_a_array+=([$src_child]="$dest_child")
 						#echo "adding to container and include array : $src_child"
 			;;
 
@@ -196,6 +222,7 @@ for lset in $lsets ; do
 						include_i_array+=($src_child)
 						dataset_i_array+=($src_child)
 						include_a_array+=([$src_child]=d)
+						dest_a_array+=([$src_child]="$dest_child")
 						#echo "adding to dataset and include array : $src_child"
 			;;
 
@@ -215,31 +242,42 @@ for lset in $lsets ; do
 	done
 done
 
-[ "$verblist" = 1 ] && do_print_i_array
-[ "$verblist" = 2 ] && do_print_a_array
+do_verblist
 
 }
 
 
 
-do_print_i_array () {
-printf "\n---------------------------------- do_print_i_array --------------------------------\n" 1>&3
+do_verblist () {
+
+[ "$verblist" = 1 ] && do_print_include_i_array
+
+[ "$verb_incl"  = 1 ] && do_print_include_a_array
+[ "$verb_dest"  = 1 ] && do_print_dest_a_array
+
+
+}
+
+
+
+do_print_include_i_array () {
+printf "\n---------------------------------- do_print_include_i_array --------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
 	printf '[LIST1] %20s\n' "include_i_array :" 1>&3
-	printf '[LIST1]                       %s\n' "${include_i_array[@]}" 1>&3
+	printf '[LIST1]                      %s\n' "${include_i_array[@]}" 1>&3
 
 	printf "[LIST1] %20s\n" 'parent_i_array :' 1>&3
-	printf "[LIST1]                       %s\n" "${parent_i_array[@]}" 1>&3
+	printf "[LIST1]                      %s\n" "${parent_i_array[@]}" 1>&3
 
 	printf "[LIST1] %20s\n" 'container_i_array :' 1>&3
-	printf "[LIST1]                       %s\n" "${container_i_array[@]}" 1>&3
+	printf "[LIST1]                      %s\n" "${container_i_array[@]}" 1>&3
 
 	printf "[LIST1] %20s\n" "dataset_i_array :" 1>&3
-	printf "[LIST1]                       %s\n" "${dataset_i_array[@]}" 1>&3
+	printf "[LIST1]                      %s\n" "${dataset_i_array[@]}" 1>&3
 
 	printf "[LIST1] %20s\n" 'exclude_i_array :' 1>&3
-	printf "[LIST1]                       %s\n" "${exclude_i_array[@]}" 1>&3
+	printf "[LIST1]                      %s\n" "${exclude_i_array[@]}" 1>&3
 
 	echo "------------------------------------------------------------------------------------" 1>&3
 
@@ -247,14 +285,31 @@ printf "\n---------------------------------- do_print_i_array ------------------
 
 
 
-do_print_a_array () {
-printf "\n---------------------------------- do_print_a_array --------------------------------\n" 1>&3
+do_print_include_a_array () {
+printf "\n---------------------------------- do_print_include_a_array --------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
-	printf '[LIST2] include_a_array :\n' 1>&3
+	printf '[LIST2] %20s\n' "include_a_array :" 1>&3
 
 	for i in ${include_i_array[@]} ;do
-		printf '[LIST2]               %s = %s\n' "${include_a_array[$i]}" "$i" 1>&3
+		printf '[LIST2] %18s = %s\n' "${include_a_array[$i]}" "$i" 1>&3
+	done
+
+	echo "------------------------------------------------------------------------------------" 1>&3
+
+}
+
+
+
+do_print_dest_a_array () {
+printf "\n---------------------------------- do_print_dest_a_array --------------------------------\n" 1>&3
+	#sleep 0.1 # to sync logging
+
+	printf '[LIST3] %20s\n' "dest_a_array :" 1>&3
+
+	for i in ${include_i_array[@]} ;do
+		printf '[LIST3] %18s = %s\n' "src <"  "$i" 1>&3
+		printf '[LIST3] %18s = %s\n' "dest >" "${dest_a_array[$i]}" 1>&3
 	done
 
 	echo "------------------------------------------------------------------------------------" 1>&3
@@ -271,6 +326,7 @@ declare -ag container_i_array
 declare -ag dataset_i_array
 declare -ag exclude_i_array
 declare -Ag include_a_array
+declare -Ag dest_a_array
 
 }
 
