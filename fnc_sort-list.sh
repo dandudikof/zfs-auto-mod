@@ -35,8 +35,10 @@ for lset in $lsets ; do
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
 		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
+		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
 		
 		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=d
+		[ "$clone" = "-" ] && unset clone
 
 		if [ "$excl" = "1" ] ;then
 
@@ -63,7 +65,10 @@ for lset in $lsets ; do
 
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
-					include_a_array+=([$src_child]=d)
+					[ "$clone" ] || include_a_array+=([$src_child]=d)
+					[ "$clone" ] && include_a_array+=([$src_child]=cl)
+					[ "$clone" ] && clone_i_array+=($src_child)
+					[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
 					dest_a_array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as else-dataset ($src_child)"
 
@@ -112,8 +117,10 @@ for lset in $lsets ; do
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
 		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
+		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
 
 		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=p
+		[ "$clone" = "-" ] && unset clone
 
 		if [ "$excl" = "1" ] ;then
 
@@ -140,7 +147,10 @@ for lset in $lsets ; do
 
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
-					include_a_array+=([$src_child]=d)
+					[ "$clone" ] || include_a_array+=([$src_child]=d)
+					[ "$clone" ] && include_a_array+=([$src_child]=cl)
+					[ "$clone" ] && clone_i_array+=($src_child)
+					[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
 					dest_a_array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as else-dataset ($src_child)"
 
@@ -188,8 +198,11 @@ for lset in $lsets ; do
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
+		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
+
 
 		[ "$excl" = 1 ] && unset lret
+		[ "$clone" = "-" ] && unset clone
 
 		case "$lret" in
 
@@ -212,7 +225,10 @@ for lset in $lsets ; do
 			d)
 						include_i_array+=($src_child)
 						dataset_i_array+=($src_child)
-						include_a_array+=([$src_child]=d)
+						[ "$clone" ] || include_a_array+=([$src_child]=d)
+						[ "$clone" ] && include_a_array+=([$src_child]=cl)
+						[ "$clone" ] && clone_i_array+=($src_child)
+						[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
 						dest_a_array+=([$src_child]="$dest_child")
 						#echo "[SORT] classified as dataset ($src_child)"
 			;;
@@ -313,8 +329,10 @@ declare -ag parent_i_array
 declare -ag container_i_array
 declare -ag dataset_i_array
 declare -ag exclude_i_array
+declare -ag clone_i_array
 declare -Ag include_a_array
 declare -Ag dest_a_array
+declare -Ag clone_a_array
 
 }
 
