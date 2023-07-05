@@ -258,6 +258,7 @@ do_verblist () {
 
 [ "$verb_incl"  = 1 ] && do_print_include_a_array
 [ "$verb_dest"  = 1 ] && do_print_dest_a_array
+[ "$verb_clone" = 1 ] && do_print_clone_a_array
 
 
 }
@@ -279,6 +280,9 @@ printf "\n---------------------------------- do_print_include_i_array ----------
 
 	printf "[LIST1] %20s\n" "dataset_i_array :" 1>&3
 	printf "[LIST1]                      %s\n" "${dataset_i_array[@]}" 1>&3
+
+	printf "[LIST1] %20s\n" "clone_i_array :" 1>&3
+	printf "[LIST1]                      %s\n" "${clone_i_array[@]}" 1>&3
 
 	printf "[LIST1] %20s\n" 'exclude_i_array :' 1>&3
 	printf "[LIST1]                      %s\n" "${exclude_i_array[@]}" 1>&3
@@ -314,6 +318,21 @@ printf "\n---------------------------------- do_print_dest_a_array -------------
 	for i in ${!dest_a_array[@]} ;do
 		printf '[LIST3] %18s = %s\n' "src <"  "$i" 1>&3
 		printf '[LIST3] %18s = %s\n' "dest >" "${dest_a_array[$i]}" 1>&3
+	done
+
+	echo "------------------------------------------------------------------------------------" 1>&3
+
+}
+
+do_print_clone_a_array () {
+printf "\n---------------------------------- do_print_clone_a_array --------------------------------\n" 1>&3
+	#sleep 0.1 # to sync logging
+
+	printf '[LIST4] %20s\n' "clone_a_array :"  1>&3
+
+	for i in ${!clone_a_array[@]} ;do
+		printf '[LIST4] %20s %s\n' "clone < ="  "$i" 1>&3
+		printf '[LIST4] %20s %s\n' "origin > =" "${clone_a_array[$i]}" 1>&3
 	done
 
 	echo "------------------------------------------------------------------------------------" 1>&3
