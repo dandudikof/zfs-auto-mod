@@ -183,17 +183,27 @@ if [ $? != 0 ] ; then
 	local head_snap="$($s_zfs list -t snapshot -H -o name $src_set | head -1)"
 	local head_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $head_snap)"
 	local orig_snap="${clone_a_array["${src_set:-null}"]}"
+	local orig_set="${clone_a_array["${src_set:-null}"]%@*}"
+	local orig_incl="${include_a_array["${orig_set:-null}"]}"
 
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] head_snap = ($head_snap)" 1>&5
 		echo "[DEBUG] head_snap_num = ($head_snap_num)" 1>&5
 		echo "[DEBUG] orig_snap = ($orig_snap)" 1>&5
+		echo "[DEBUG] orig_set = ($orig_set)" 1>&5
+		echo "[DEBUG] orig_incl = ($orig_incl)" 1>&5
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+
+	if [ -n "$orig_snap" ] && ! [[ "$orig_incl" = d || "$orig_incl" = cl ]] ;then
+		echo "[WARNING] > origin set ($orig_set) is NOT on the dataset include list" 1>&3
+		echo "[WARNING] >> clone set ($src_set) will be replicated, but NOT as a clone on dest" 1>&3
+		echo "[WARNING] >>> to FIX, add origin set to include AND remove/rename clone set on dest to resend" 1>&3
+	fi
 
 	echo "[INFO2] dest set $dest_set does NOT exist" 1>&4
 	echo "[INFO1] zfs send $head_snap" 1>&3
 
-	if [ -n "$orig_snap" ] ;then
+	if [ -n "$orig_snap" ] && [[ "$orig_incl" = d || "$orig_incl" = cl ]] ;then
 
 		echo "[DEBUG] ($src_set) is a clone, and origin is ($orig_snap)" 1>&5
 		local zfs_send_cmd="$s_zfs send -pv -i $orig_snap $head_snap"
@@ -201,7 +211,7 @@ if [ $? != 0 ] ; then
 
 	else
 
-		echo "[DEBUG] ($src_set) is not a clone" 1>&5
+		echo "[DEBUG] ($src_set) is not a clone, or origin is not on include list" 1>&5
 		local zfs_send_cmd="$s_zfs send -pv $head_snap"
 		local zfs_recv_cmd="$d_zfs recv -uv $dest_set"
 
