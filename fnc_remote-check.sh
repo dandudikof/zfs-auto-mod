@@ -14,31 +14,35 @@ if [ -z "$s_srv" ]  ;then
 else
 
 	do_wake_and_ping1 s
+	local ret="$?"
 	
-	if [ "$isup" = "y" ] ; then
+	if [ "$ret" = "2" ] ; then
 		echo "[INFO2] SRC server was reached at ($s_ip) , on first try, continue" 1>&4
-	elif [ "$isup" = "yy" ] ; then
+	elif [ "$ret" = "3" ] ; then
 		echo "[INFO2] SRC server was reached at ($s_ip) sleep for 10, continue " 1>&4
 		sleep 10
 	else
-		echo "[ERROR] SRC server could not be reached at ($s_ip) after ($tcount) tries , exit 1" 1>&3
+		echo "[ERROR] SRC server could not be reached at ($s_ip) after ($tcount) tries" 1>&3
 		exit 1
 	fi
 fi
+
+[ "$1" = s ] && return 0
 
 if [ -z "$d_srv" ]  ;then
 	echo "[INFO2] d_srv was set to (), do_everything localy" 1>&4
 else
 
 	do_wake_and_ping1 d
-	
-	if [ "$isup" = "y" ] ; then
+	local ret="$?"
+
+	if [ "$ret" = "2" ] ; then
 		echo "[INFO2] DEST server was reached at ($d_ip) , on first try, continue" 1>&4		
-	elif [ "$isup" = "yy" ] ; then
+	elif [ "$ret" = "3" ] ; then
 		echo "[INFO2] DEST server was reached at ($d_ip) sleep for 10, continue" 1>&4
 		sleep 10
 	else
-		echo "[ERROR] DEST server could not be reached at ($d_ip) after ($tcount) tries , exit 1" 1>&3
+		echo "[ERROR] DEST server could not be reached at ($d_ip) after ($tcount) tries" 1>&3
 		exit 1
 	fi
 
@@ -58,15 +62,18 @@ for sord in s d ;do
 	[ "$sord" = "s" ] && local which=SRC
 	[ "$sord" = "d" ] && local which=DEST
 
+	[ "$sord" = "d" ] && [ "$1" = "s" ] && return 0
+
 	if [ -z "${!l_srv}" ] ; then
 		echo "[INFO2] "$sord"_srv was set to () not exiting, and continue localy" 1>&4
 	else
 
 		do_wake_and_ping2 $sord
-		
-		if [ "$isup" = "y" ] ; then
+		local ret="$?"
+
+		if [ "$ret" = "2" ] ; then
 			echo "[INFO2] $which server was reached at (${!l_ip}) on first try,continue" 1>&4
-		elif [ "$isup" = "yy" ] ; then
+		elif [ "$ret" = "3" ] ; then
 			echo "[INFO2] $which server was reached at (${!l_ip}) sleep for 10, continue" 1>&4
 			sleep 10
 		else
@@ -91,31 +98,21 @@ printf "\n---------------------------------- wake_and_ping_check1 --------------
 		local l_mac=$d_mac
 		local l_ip=$d_ip
 	fi
-	
-local ret=""
+
 tcount=1
-isup=""
 
 ping -c1 -W1 "$l_ip" > /dev/null 2>&1
-if [ "$?" = 0 ] ; then
-	isup=y
-	return 0
-fi
+[ "$?" = 0 ] &&	return 2
 
 echo "[INFO2] doing ($wake_cmd $l_mac)" 1>&4
 
 [ -n "$wake_cmd" ] && [ -n "${l_mac}" ] && "$wake_cmd" "$l_mac"
 
-while  [ "$ret" != 0 ] && [ "$tcount" -le 10 ] ; do
+while  [ "$tcount" -le 10 ] ; do
 
 	sleep 30
 	ping -c1 -W1 "$l_ip" > /dev/null 2>&1
-	ret=$?
-
-	if [ "$ret" = 0 ] ;then
-		isup=yy
-		return 0
-	fi
+	[ $? = 0 ] && return 3
 	
 	echo "[DEBUG] ping_check to ($l_ip) ret=($ret) count=($tcount) , sleep 30" 1>&5
 	
@@ -136,30 +133,20 @@ printf "\n---------------------------------- wake_and_ping_check2 --------------
 local l_mac=${1}_mac
 local l_ip=${1}_ip
 
-local ret=""
 tcount=1
-isup=""
 
 ping -c1 -W1 "${!l_ip}" > /dev/null 2>&1
-if [ "$?" = 0 ] ; then
-	isup=y
-	return 0
-fi
+[ "$?" = 0 ] &&	return 2
 
 echo "[INFO2] doing ($wake_cmd ${!l_mac})" 1>&4
 
 [ -n "$wake_cmd" ] && [ -n "${!l_mac}" ] && "$wake_cmd" "${!l_mac}"
 
-while  [ "$ret" != 0 ] && [ "$tcount" -le 10 ] ; do
+while [ "$tcount" -le 10 ] ; do
 
 	sleep 30
 	ping -c1 -W1 "${!l_ip}" > /dev/null 2>&1
-	ret=$?
-
-	if [ "$ret" = 0 ] ;then
-		isup=yy
-		return 0
-	fi
+	[ $? = 0 ] && return 3
 	
 	echo "[DEBUG] ping_check to (${!l_ip}) ret=($ret) count=($tcount) , sleep 30" 1>&5
 	
