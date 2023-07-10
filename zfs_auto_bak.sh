@@ -297,14 +297,16 @@ $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? = 0 ] ; then
 
 	local match_snap="$(do_match_snap $src_set)"
-	local last_snap="$($s_zfs list -t snapshot -H -o name $src_set | tail -n 1)"
+	local last_src_snap="$($s_zfs list -t snapshot -H -o name $src_set | tail -n 1)"
+	local last_dest_snap="$($d_zfs list -t snapshot -H -o name $dest_set | tail -n 1)"
 	local last_auto_snap="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
 	local last_auto_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 	local last_trans_snap="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
 
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] match_snap = $match_snap" 1>&5
-		echo "[DEBUG] last_snap = $last_snap" 1>&5
+		echo "[DEBUG] last_src_snap = $last_src_snap" 1>&5
+		echo "[DEBUG] last_dest_snap = $last_dest_snap" 1>&5
 		echo "[DEBUG] last_auto_snap = $last_auto_snap" 1>&5
 		echo "[DEBUG] last_auto_snap_num = $last_auto_snap_num" 1>&5
 		echo "[DEBUG] last_trans_snap = $last_trans_snap" 1>&5
@@ -315,14 +317,20 @@ if [ $? = 0 ] ; then
 		echo "[ERROR] match_snap NOT found for $src_set" 1>&3
 		echo "[ERROR] can NOT do incr send for $src_set" 1>&3
 		return 1
+		
+	elif [ "${match_snap#*@}" != "${last_dest_snap#*@}" ] && [ "$d_force" != 1 ];then
+	
+		echo "[ERROR] match_snap $match_snap is NOT the last snapshot on dest " 1>&3
+		echo "[ERROR] rollback dest to $dest_set@${match_snap#*@} OR enable force push" 1>&3
+		return 1
 
-	elif [ "$last_snap" != "$match_snap" ] ;then
+	echo "[INFO1] zfs send $match_snap" 1>&3
+	echo "[INFO1] to ----> $last_src_snap" 1>&3
 
-		echo "[INFO1] zfs send $match_snap" 1>&3
-		echo "[INFO1] to ----> $last_snap" 1>&3
+	[ "$d_force" = 1 ] && local F=F 
 
-		local zfs_send_cmd="$s_zfs send -pv -I $match_snap $last_snap"
-		local zfs_recv_cmd="$d_zfs recv -Fuv -x $pfix:tsnum $dest_set"
+	local zfs_send_cmd="$s_zfs send -pv -I $match_snap $last_src_snap"
+	local zfs_recv_cmd="$d_zfs recv -${F}uv -x $pfix:tsnum $dest_set"
 
 		echo "[ZFS_SEND] ($zfs_send_cmd)" 1>&5
 		echo "[ZFS_RECV] ($zfs_recv_cmd)" 1>&5
