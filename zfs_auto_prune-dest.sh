@@ -28,7 +28,7 @@ do_everything() {
 
 				do_lock_check
 				do_remote_check1
-				do_pool_check1
+				do_pool_check
 				do_sort_list"$sort_type" #>/dev/null 3>&1
 				do_prune_dest"$snap_type"
 				
