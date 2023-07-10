@@ -27,7 +27,7 @@ do_everything() {
 #printf "\n==================================== DO_EVERYTHING ======================================\n\n"
 
 				do_lock_check
-				do_remote_check1
+				do_remote_check
 				do_pool_check
 				do_sort_list"$sort_type" #>/dev/null 3>&1
 				do_backup_sort
