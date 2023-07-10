@@ -48,17 +48,29 @@ for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
 	local dest_set="${dest_a_array[$child]}"
-	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
-
+	
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] dest_set = ($dest_set)" 1>&5
+		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		
+	$d_zfs list -H -o name $dest_set > /dev/null 2>&1
+	if [ $? != 0 ] ;then
+
+		echo "[INFO2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
+		continue
+
+	fi
+
+	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
+
+		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] last_dest_snap_num = ($last_dest_snap_num)" 1>&5
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if [ -z $last_dest_snap_num  ] ;then
 
-		echo "[INFO2] dest_set $dest_set has NOT been transfered yet , skipping prune" 1>&4
+		echo "[INFO2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
 
 	else
 
@@ -106,17 +118,29 @@ for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
 	local dest_set="${dest_a_array[$child]}"
-	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
-
+	
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] dest_set = ($dest_set)" 1>&5
+		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		
+	$d_zfs list -H -o name $dest_set > /dev/null 2>&1
+	if [ $? != 0 ] ;then
+
+		echo "[INFO2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
+		continue
+
+	fi
+
+	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
+
+		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] last_dest_snap_num = ($last_dest_snap_num)" 1>&5
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if  [ -z $last_dest_snap_num  ] ;then
 
-		echo "[INFO2] dest set $dest_set has NOT been transfered yet , skipping prune" 1>&4
+		echo "[INFO2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
 
 	else
 
@@ -175,17 +199,29 @@ for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
 	local dest_set="${dest_a_array[$child]}"
-	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
-
+	
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] dest_set = ($dest_set)" 1>&5
+		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		
+	$d_zfs list -H -o name $dest_set > /dev/null 2>&1
+	if [ $? != 0 ] ;then
+
+		echo "[INFO2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
+		continue
+
+	fi
+
+	local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
+
+		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] last_dest_snap_num = ($last_dest_snap_num)" 1>&5
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if  [ -z $last_dest_snap_num  ] ;then
 
-		echo "[INFO2] dest set $dest_set has NOT been transfered yet , skipping prune" 1>&4
+		echo "[INFO2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
 
 	else
 
