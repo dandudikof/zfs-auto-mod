@@ -57,7 +57,7 @@ for child in "${dataset_i_array[@]}" ;do
 	$d_zfs list -H -o name $dest_set > /dev/null 2>&1
 	if [ $? != 0 ] ;then
 
-		echo "[INFO2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
+		echo "[info2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
 		continue
 
 	fi
@@ -70,7 +70,7 @@ for child in "${dataset_i_array[@]}" ;do
 
 	if [ -z $last_dest_snap_num  ] ;then
 
-		echo "[INFO2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
+		echo "[info2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
 
 	else
 
@@ -78,7 +78,7 @@ for child in "${dataset_i_array[@]}" ;do
 		local p_list="$($d_zfs get $pfix_stype -t snapshot -s received -H -o name  $dest_set  | head -n -$d_k)"
 
 		if [ -z "$p_list" ] ;then
-			echo "[INFO1] nothing to prune in $dest_set" 1>&3
+			echo "[info1] nothing to prune in $dest_set" 1>&3
 			continue
 		fi
 
@@ -88,12 +88,12 @@ for child in "${dataset_i_array[@]}" ;do
 
 			if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
 
-				echo "[INFO1] zfs destroy $p" 1>&3
+				echo "[info1] zfs destroy $p" 1>&3
 				$d_zfs destroy $p
 
 			else
 
-				echo "[INFO2] NOT ok to destroy $p"  1>&4
+				echo "[info2] NOT ok to destroy $p"  1>&4
 
 			fi
 
@@ -127,7 +127,7 @@ for child in "${dataset_i_array[@]}" ;do
 	$d_zfs list -H -o name $dest_set > /dev/null 2>&1
 	if [ $? != 0 ] ;then
 
-		echo "[INFO2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
+		echo "[info2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
 		continue
 
 	fi
@@ -140,7 +140,7 @@ for child in "${dataset_i_array[@]}" ;do
 
 	if  [ -z $last_dest_snap_num  ] ;then
 
-		echo "[INFO2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
+		echo "[info2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
 
 	else
 
@@ -157,7 +157,7 @@ for child in "${dataset_i_array[@]}" ;do
 			local p_list="$($d_zfs get $pfix_stype -t snapshot -s received -H -o name $dest_set | head -n -${!ld_k})"
 
 			if [ -z "$p_list" ] ;then
-				echo "[INFO2] nothing to prune for ${mwdh}ly in $dest_set" 1>&4
+				echo "[info2] nothing to prune for ${mwdh}ly in $dest_set" 1>&4
 				continue
 			fi
 
@@ -167,12 +167,12 @@ for child in "${dataset_i_array[@]}" ;do
 
 				if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
 
-					echo "[INFO1] zfs destroy $p" 1>&3
+					echo "[info1] zfs destroy $p" 1>&3
 					$d_zfs destroy $p
 
 				else
 				
-					echo "[INFO2] NOT ok to destroy $p"  1>&4
+					echo "[info2] NOT ok to destroy $p"  1>&4
 					
 				fi
 
@@ -208,7 +208,7 @@ for child in "${dataset_i_array[@]}" ;do
 	$d_zfs list -H -o name $dest_set > /dev/null 2>&1
 	if [ $? != 0 ] ;then
 
-		echo "[INFO2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
+		echo "[info2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
 		continue
 
 	fi
@@ -221,7 +221,7 @@ for child in "${dataset_i_array[@]}" ;do
 
 	if  [ -z $last_dest_snap_num  ] ;then
 
-		echo "[INFO2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
+		echo "[info2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
 
 	else
 
@@ -239,7 +239,7 @@ for child in "${dataset_i_array[@]}" ;do
 			local p_list="$($d_zfs get $pfix_stype -t snapshot -s received -H -o name $dest_set | head -n -${!ld_k})"
 
 			if [ -z "$p_list" ] ;then
-				echo "[INFO2] nothing to prune for ${mwdh}ly in $dest_set" 1>&4
+				echo "[info2] nothing to prune for ${mwdh}ly in $dest_set" 1>&4
 				continue
 			fi
 
@@ -249,12 +249,12 @@ for child in "${dataset_i_array[@]}" ;do
 
 				if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
 
-					echo "[INFO1] zfs destroy $p" 1>&3
+					echo "[info1] zfs destroy $p" 1>&3
 					$d_zfs destroy $p
 
 				else
 				
-					echo "[INFO2] NOT ok to destroy $p"  1>&4
+					echo "[info2] NOT ok to destroy $p"  1>&4
 					
 				fi
 

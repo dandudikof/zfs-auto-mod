@@ -94,12 +94,12 @@ local dest_set=${dest_a_array[$1]}
 $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? = 0 ] ;then
 
-	echo "[INFO2] dest_set $dest_set exists" 1>&4
+	echo "[info2] dest_set $dest_set exists" 1>&4
 
 else
 
-	echo "[INFO2] dest_set $dest_set does NOT exist" 1>&4
-	echo "[INFO1] zfs create $dest_set" 1>&3
+	echo "[info2] dest_set $dest_set does NOT exist" 1>&4
+	echo "[info1] zfs create $dest_set" 1>&3
 
 	local zfs_cmd="$d_zfs create -p -o mountpoint=none $dest_set"
 	echo "[ZFS_CMD] ($zfs_cmd)" 1>&5
@@ -128,7 +128,7 @@ local dest_set=${dest_a_array[$1]}
 $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? = 0 ] ;then
 
-	echo "[INFO2] dest set $dest_set exists" 1>&4
+	echo "[info2] dest set $dest_set exists" 1>&4
 	return
 
 fi
@@ -142,8 +142,8 @@ if [ $? != 0 ] ;then
 
 else
 
-	echo "[INFO2] parent set $dest_set does NOT exist" 1>&4
-	echo "[INFO1] zfs send $src_set@$pfix-parent" 1>&3
+	echo "[info2] parent set $dest_set does NOT exist" 1>&4
+	echo "[info1] zfs send $src_set@$pfix-parent" 1>&3
 
 	local zfs_send_cmd="$s_zfs send -pv $src_set@$pfix-parent"
 	local zfs_recv_cmd="$d_zfs recv -Fuv $dest_set"
@@ -190,7 +190,7 @@ local dest_set=${dest_a_array[$1]}
 $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? = 0 ] ; then
 
-	 echo "[INFO2] dest set $dest_set exist" 1>&4
+	 echo "[info2] dest set $dest_set exist" 1>&4
 
 else
 
@@ -222,8 +222,8 @@ else
 		echo "[WARNING] >>> to FIX, add origin set to include AND remove/rename clone set on dest to resend" 1>&3
 	fi
 
-	echo "[INFO2] dest set $dest_set does NOT exist" 1>&4
-	echo "[INFO1] zfs send $head_snap" 1>&3
+	echo "[info2] dest set $dest_set does NOT exist" 1>&4
+	echo "[info1] zfs send $head_snap" 1>&3
 
 	if [ -n "$orig_snap" ] && [[ "$orig_incl" = d || "$orig_incl" = cl ]] ;then
 
@@ -353,14 +353,14 @@ else
 
 	elif [ "$match_snap" = "$last_src_snap" ] ;then
 
-		echo "[INFO2] last snapshot $last_src_snap = match_snap."	1>&4
-		echo "[INFO2] NO need to send $last_src_snap."	1>&4
+		echo "[info2] last snapshot $last_src_snap = match_snap."	1>&4
+		echo "[info2] NO need to send $last_src_snap."	1>&4
 		return 0
 
 	fi
 
-	echo "[INFO1] zfs send $match_snap" 1>&3
-	echo "[INFO1] to ----> $last_src_snap" 1>&3
+	echo "[info1] zfs send $match_snap" 1>&3
+	echo "[info1] to ----> $last_src_snap" 1>&3
 
 	[ "$d_force" = 1 ] && local F=F 
 

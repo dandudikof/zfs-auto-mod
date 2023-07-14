@@ -57,12 +57,12 @@ for child in "${parent_i_array[@]}" ;do
 
 	if [ -n "$parent_check" ] ;then
 
-		echo "[INFO2] parent snapshot $src_set@$pfix-parent exists" 1>&4
+		echo "[info2] parent snapshot $src_set@$pfix-parent exists" 1>&4
 
 	else
 
-		echo "[INFO2] parent snapshot $src_set@$pfix-parent does NOT exist" 1>&4
-		echo "[INFO1] zfs snapshot $src_set@$pfix-parent" 1>&3
+		echo "[info2] parent snapshot $src_set@$pfix-parent does NOT exist" 1>&4
+		echo "[info1] zfs snapshot $src_set@$pfix-parent" 1>&3
 
 		$s_zfs snapshot $src_set@$pfix-parent
 
@@ -115,18 +115,18 @@ for child in "${dataset_i_array[@]}" ;do
 
 	if [ -n "$snap_check" ] ;then
 
-		echo "[INFO2] snapshot $snap_check allready exists" 1>&4
-		echo "[INFO2] NOT doing zfs snapshot $current_snap" 1>&4
+		echo "[info2] snapshot $snap_check allready exists" 1>&4
+		echo "[info2] NOT doing zfs snapshot $current_snap" 1>&4
 		
 	elif [ "$written_size" -lt "$minws_check" ] && [ -n "$last_snap" ] ;then
 
-		echo "[INFO2] minimal usage has NOT reached min_wsize = ($minws_check) bytes" 1>&4
-		echo "[INFO2] NOT doing zfs snapshot $current_snap" 1>&4
+		echo "[info2] minimal usage has NOT reached min_wsize = ($minws_check) bytes" 1>&4
+		echo "[info2] NOT doing zfs snapshot $current_snap" 1>&4
 
 	else
 
-		echo "[INFO2] minimal usage has reached set min_wsize = ($minws_check) bytes" 1>&4
-		echo "[INFO1] zfs snapshot $current_snap" 1>&3
+		echo "[info2] minimal usage has reached set min_wsize = ($minws_check) bytes" 1>&4
+		echo "[info1] zfs snapshot $current_snap" 1>&3
 		$s_zfs snapshot -o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num $current_snap
 
 	fi
@@ -192,13 +192,13 @@ for child in "${dataset_i_array[@]}" ;do
 
 	if [ -n "$snap_check" ] ;then
 
-		echo "[INFO2] snapshot $snap_check allready exists" 1>&4
-		echo "[INFO2] NOT doing zfs snapshot $current_snap" 1>&4
+		echo "[info2] snapshot $snap_check allready exists" 1>&4
+		echo "[info2] NOT doing zfs snapshot $current_snap" 1>&4
 
 	else
 
-		echo "[INFO2] snapshot $current_snap does NOT exist" 1>&4
-		echo "[INFO1] zfs snapshot $current_snap" 1>&3
+		echo "[info2] snapshot $current_snap does NOT exist" 1>&4
+		echo "[info1] zfs snapshot $current_snap" 1>&3
 		$s_zfs snapshot -o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num $current_snap
 
 	fi
@@ -260,17 +260,17 @@ for child in "${dataset_i_array[@]}" ;do
 
 		if  [ "$need_snap" = 0 ] ;then
 			
-			echo "[INFO2] NO need for ${mwdh}'ly snapshot in $src_set" 1>&4
+			echo "[info2] NO need for ${mwdh}'ly snapshot in $src_set" 1>&4
 
 		elif [ -n "$snap_check" ] ;then
 
-			echo "[INFO2] snapshot $snap_check exists" 1>&4
-			echo "[INFO2] NOT doing zfs snapshot $current_snap" 1>&4
+			echo "[info2] snapshot $snap_check exists" 1>&4
+			echo "[info2] NOT doing zfs snapshot $current_snap" 1>&4
 
 		else
 
-			echo "[INFO2] snapshot $current_snap does NOT exist" 1>&4
-			echo "[INFO1] zfs snapshot $current_snap" 1>&3
+			echo "[info2] snapshot $current_snap does NOT exist" 1>&4
+			echo "[info1] zfs snapshot $current_snap" 1>&3
 
 			$s_zfs snapshot -o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num $current_snap
 
