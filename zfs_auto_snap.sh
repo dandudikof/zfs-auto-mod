@@ -49,10 +49,10 @@ for child in "${parent_i_array[@]}" ;do
 	local src_set=$child
 	local parent_check="$($s_zfs list -H -o name $src_set@$pfix-parent 2> /dev/null)"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] parent_check = ($parent_check)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 
 	if [ -n "$parent_check" ] ;then
@@ -68,7 +68,7 @@ for child in "${parent_i_array[@]}" ;do
 
 	fi
 
-	echo "------------------------------------------------------------------------------------------------" 1>&5
+	echo "------------------------------------------------------------------------------------------------" 1>&4
 
 done
 
@@ -88,12 +88,12 @@ for child in "${dataset_i_array[@]}" ;do
 	local snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 	local written_size="$($s_zfs get written -H -p -o value $src_set)"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
 		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
 		echo "[DEBUG] written_size = ($written_size)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	((snap_num++))
 	
@@ -105,13 +105,13 @@ for child in "${dataset_i_array[@]}" ;do
 
 	[ -z "$minws_check" ] && minws_check=0
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 		echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 		echo "[DEBUG] snap_check = ($snap_check)" 1>&5
 		echo "[DEBUG] minws_check = ($minws_check)" 1>&5
 		echo "[DEBUG] current_snap = ($current_snap)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if [ -n "$snap_check" ] ;then
 
@@ -150,11 +150,11 @@ for child in "${dataset_i_array[@]}" ;do
 	local last_snap="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
 	local snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
 		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	local i
 	local mwdh	#just for info
@@ -183,12 +183,12 @@ for child in "${dataset_i_array[@]}" ;do
 	local snap_check="$($s_zfs get $pfix_sdate -t snapshot -s local,received -H -o name $src_set)"
 	local current_snap="$src_set@${pfix}-t2-${DATE}_${TIME}-${i}"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 		echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 		echo "[DEBUG] snap_check = ($snap_check)" 1>&5
 		echo "[DEBUG] current_snap = ($current_snap)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if [ -n "$snap_check" ] ;then
 
@@ -222,11 +222,11 @@ for child in "${dataset_i_array[@]}" ;do
 	local last_snap="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
 	local snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
 		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	for i in m w d h ;do
 	
@@ -250,13 +250,13 @@ for child in "${dataset_i_array[@]}" ;do
 		local snap_check="$($s_zfs get $pfix_sdate -t snapshot -s local,received -H -o name $src_set)"
 		local current_snap="$src_set@${pfix}-t3-${DATE}_${TIME}-${i}"
 
-			echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 			echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 			echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 			echo "[DEBUG] need_snap = ($need_snap)" 1>&5
 			echo "[DEBUG] snap_check = ($snap_check)" 1>&5
 			echo "[DEBUG] current_snap = ($current_snap)" 1>&5
-			echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 		if  [ "$need_snap" = 0 ] ;then
 			
