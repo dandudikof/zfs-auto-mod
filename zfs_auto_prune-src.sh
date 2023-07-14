@@ -51,12 +51,12 @@ for child in "${dataset_i_array[@]}" ;do
 	local last_trans_snap_num="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 	local last_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] last_trans_snap = ($last_trans_snap)" 1>&5
 		echo "[DEBUG] last_trans_snap_num  = ($last_trans_snap_num)" 1>&5
 		echo "[DEBUG] last_snap_num = ($last_snap_num)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if [ -z $last_trans_snap_num  ] && [ "$s_type" = sbp ] ;then
 
@@ -68,7 +68,7 @@ for child in "${dataset_i_array[@]}" ;do
 		local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -$s_k)"
 
 		if [ -z "$p_list" ] ;then
-			echo "[info1] nothing to prune in $src_set" 1>&3
+			echo "[info2] nothing to prune in $src_set" 1>&4
 			continue
 		fi
 
@@ -116,12 +116,12 @@ for child in "${dataset_i_array[@]}" ;do
 	local last_trans_snap_num="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 	local last_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] last_trans_snap = ($last_trans_snap)" 1>&5
 		echo "[DEBUG] last_trans_snap_num  = ($last_trans_snap_num)" 1>&5
 		echo "[DEBUG] last_snap_num = ($last_snap_num)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if  [ -z $last_trans_snap_num  ] && [ "$s_type" = sbp ] ;then
 
@@ -192,12 +192,12 @@ for child in "${dataset_i_array[@]}" ;do
 	local last_trans_snap_num="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] last_snap_num = ($last_snap_num)" 1>&5
 		echo "[DEBUG] last_trans_snap = ($last_trans_snap)" 1>&5
 		echo "[DEBUG] last_trans_snap_num = ($last_trans_snap_num)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if  [ -z $last_trans_snap_num ] && [ "$s_type" = sbp ] ;then
 
