@@ -3,7 +3,7 @@
 
 do_sort_list1() {
 
-printf "\n---------------------------------- do_sort_list1 -----------------------------------\n" 1>&5
+printf "\n--------------------------------------( do_sort_list1 )-----------------------------------------\n" 1>&5
 		# auto dataset sort (uncludes all under s_pool,s_sets and parent,container,dataset unless excluded)
 
 do_declare_arrays
@@ -85,7 +85,7 @@ do_verblist
 
 
 do_sort_list2() {
-printf "\n---------------------------------- do_sort_list2 -----------------------------------\n" 1>&5
+printf "\n--------------------------------------( do_sort_list2 )-----------------------------------------\n" 1>&5
 		# auto parent sort (uncludes all under s_pool,s_sets and parent,container,dataset unless excluded)
 
 do_declare_arrays
@@ -167,7 +167,7 @@ do_verblist
 
 
 do_sort_list3() {
-printf "\n---------------------------------- do_sort_list3 -----------------------------------\n" 1>&5
+printf "\n--------------------------------------( do_sort_list3 )-----------------------------------------\n" 1>&5
 		# manual sort (must set every parent,container,dataset otherwise exclude)
 
 do_declare_arrays
@@ -266,7 +266,7 @@ do_verblist () {
 
 
 do_print_include_i_array () {
-printf "\n---------------------------------- do_print_include_i_array --------------------------------\n" 1>&3
+printf "\n--------------------------------------( do_print_include_i_array )------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
 	printf '[LIST1] %20s\n' "include_i_array :" 1>&3
@@ -287,14 +287,14 @@ printf "\n---------------------------------- do_print_include_i_array ----------
 	printf "[LIST1] %20s\n" 'exclude_i_array :' 1>&3
 	printf "[LIST1]                      %s\n" "${exclude_i_array[@]}" 1>&3
 
-	echo "------------------------------------------------------------------------------------" 1>&3
+	echo "------------------------------------------------------------------------------------------------" 1>&3
 
 }
 
 
 
 do_print_include_a_array () {
-printf "\n---------------------------------- do_print_include_a_array --------------------------------\n" 1>&3
+printf "\n--------------------------------------( do_print_include_a_array )------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
 	printf '[LIST2] %20s\n' "include_a_array :" 1>&3
@@ -303,14 +303,14 @@ printf "\n---------------------------------- do_print_include_a_array ----------
 		printf '[LIST2] %18s = %s\n' "${include_a_array[$i]}" "$i" 1>&3
 	done
 
-	echo "------------------------------------------------------------------------------------" 1>&3
+	echo "------------------------------------------------------------------------------------------------" 1>&3
 
 }
 
 
 
 do_print_dest_a_array () {
-printf "\n---------------------------------- do_print_dest_a_array --------------------------------\n" 1>&3
+printf "\n--------------------------------------( do_print_dest_a_array )---------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
 	printf '[LIST3] %20s\n' "dest_a_array :" 1>&3
@@ -320,12 +320,12 @@ printf "\n---------------------------------- do_print_dest_a_array -------------
 		printf '[LIST3] %18s = %s\n' "dest >" "${dest_a_array[$i]}" 1>&3
 	done
 
-	echo "------------------------------------------------------------------------------------" 1>&3
+	echo "------------------------------------------------------------------------------------------------" 1>&3
 
 }
 
 do_print_clone_a_array () {
-printf "\n---------------------------------- do_print_clone_a_array --------------------------------\n" 1>&3
+printf "\n--------------------------------------( do_print_clone_a_array )--------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
 	printf '[LIST4] %20s\n' "clone_a_array :"  1>&3
@@ -335,7 +335,7 @@ printf "\n---------------------------------- do_print_clone_a_array ------------
 		printf '[LIST4] %20s %s\n' "origin > =" "${clone_a_array[$i]}" 1>&3
 	done
 
-	echo "------------------------------------------------------------------------------------" 1>&3
+	echo "------------------------------------------------------------------------------------------------" 1>&3
 
 }
 
