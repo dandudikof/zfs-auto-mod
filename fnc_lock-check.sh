@@ -2,7 +2,6 @@
 # checks for existence of lockfile for execution of current script with current *.cfg file
 # exits with 1 if lockfile exist and pid that created it is still running
 # else removes stale lock files, creates new lock files, returns 0 and continues
-#
 
 
 
@@ -16,7 +15,7 @@ pid_file="$lock_dir/$script/$config_file.pid"
 
 
 do_lock_check() {
-printf "\n---------------------------------- do_lock_check --------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_lock_check )-----------------------------------------\n" 1>&4
 		# lock files creation and lock checks
 
 [ ! -d "$lock_dir" ] && mkdir "$lock_dir"
@@ -35,7 +34,7 @@ if [ -f $lock_file ] ;then
 		
 	else
 	
-		echo "[INFO2] lock files exist for $script $config_file but are stale , removing" 1>&4
+		echo "[info2] lock files exist for $script $config_file but are stale , removing" 1>&4
 		rm "$lock_file"
 		rm "$pid_file"
 	
@@ -63,14 +62,14 @@ return 0
 
 
 do_lock_clear() {
-printf "\n---------------------------------- do_lock_clear --------------------------------\n" 1>&4
-
+printf "\n--------------------------------------( do_lock_clear )-----------------------------------------\n" 1>&4
+		# lock files remove
 
 
 if [ -f $lock_file ] ;then
-	
-		echo "[INFO2] removing lock_file for $script $config_file" 1>&4
-		echo "[INFO2] removing pid_file for $script $config_file" 1>&4
+
+		echo "[info2] removing lock_file for $script $config_file" 1>&4
+		echo "[info2] removing pid_file for $script $config_file" 1>&4
 		rm "$lock_file"
 		rm "$pid_file"
 fi

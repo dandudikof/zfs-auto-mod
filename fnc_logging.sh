@@ -82,7 +82,7 @@ sendlog1 () {
 				tcount=0
 
 				if [ -n "$(echo $line | grep ^'send from')" ] ; then
-					echo "[SEND-1] $line " | sed 's! to ! >>>\n[SEND>1] to !g' >> $log6
+					echo "[SEND-1] $line " | sed 's! to !\n[SEND-1] to -----> !g' >> $log6
 				else
 					echo "[SEND-1] $line"  >> $log6
 				fi
@@ -142,10 +142,12 @@ recvlog () {
 
 		while read line ;do
 
-			if [ -n "$(echo $line | grep ^received)" ] ; then
-				echo "[RECV-1] $line" >> $log3
+			if [ -n "$(echo $line | grep "^receiving full")" ] ;then
+				echo "[RECV-1] $line" | sed 's! into !\n[RECV-1] into ------------------> !g' >> $log3
+			elif [ -n "$(echo $line | grep "^receiving incremental")" ] ;then
+				echo "[RECV-1] $line" | sed 's! into !\n[RECV-1] into -------------------------> !g' >> $log3
 			else
-				echo "[RECV-1] $line " | sed 's! into ! >>>\n[RECV>1] >>>>>>>   into   !g' >> $log3
+				echo "[RECV-1] $line" >> $log3
 			fi
 
 		done
