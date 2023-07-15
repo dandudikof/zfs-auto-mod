@@ -86,88 +86,6 @@ do_verblist
 
 do_sort_list2() {
 printf "\n--------------------------------------( do_sort_list2 )-----------------------------------------\n" 1>&5
-		# auto parent sort (uncludes all under s_pool,s_sets and parent,container,dataset unless excluded)
-
-do_declare_arrays
-
-if [ -z "$s_sets" ] ;then
-	lsets="$s_pool"
-else
-	for set in $s_sets ;do		#(!double quoting expands as single word)
-		lsets+="$s_pool/$set "
-		#lsets="$lsets $s_pool/$set"
-	done
-fi
-
-include_i_array+=($s_pool)
-parent_i_array+=($s_pool)
-include_a_array+=([$s_pool]=p)
-
-[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
-[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
-
-for lset in $lsets ; do
-	for src_child in $($s_zfs list -Hr -o name $lset) ;do
-
-		[ "$src_child" = "$s_pool" ] && continue
-
-		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
-		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
-
-		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
-		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
-		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
-		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
-
-		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=p
-		[ "$clone" = "-" ] && unset clone
-
-		if [ "$excl" = "1" ] ;then
-
-					exclude_i_array+=($src_child)
-					#echo "[SORT] classified as excluded ($src_child)"
-		
-		elif [ "$lret" = "p" ] ;then
-
-					include_i_array+=($src_child)
-					parent_i_array+=($src_child)
-					include_a_array+=([$src_child]=p)
-					dest_a_array+=([$src_child]="$dest_child")
-					#echo "[SORT] classified as parent ($src_child)"
-
-		elif [ "$lret" = "c" ] ;then
-
-					include_i_array+=($src_child)
-					container_i_array+=($src_child)
-					include_a_array+=([$src_child]=c)
-					dest_a_array+=([$src_child]="$dest_child")
-					#echo "[SORT] classified as container ($src_child)"
-
-		else
-
-					include_i_array+=($src_child)
-					dataset_i_array+=($src_child)
-					[ "$clone" ] || include_a_array+=([$src_child]=d)
-					[ "$clone" ] && include_a_array+=([$src_child]=cl)
-					[ "$clone" ] && clone_i_array+=($src_child)
-					[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
-					dest_a_array+=([$src_child]="$dest_child")
-					#echo "[SORT] classified as else-dataset ($src_child)"
-
-		fi
-
-	done
-
-done
-
-do_verblist
-
-}
-
-
-
-do_sort_list3() {
-printf "\n--------------------------------------( do_sort_list3 )-----------------------------------------\n" 1>&5
 		# manual sort (must set every parent,container,dataset otherwise exclude)
 
 do_declare_arrays
@@ -199,7 +117,6 @@ for lset in $lsets ; do
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
 		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
-
 
 		[ "$excl" = 1 ] && unset lret
 		[ "$clone" = "-" ] && unset clone

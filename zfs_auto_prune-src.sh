@@ -118,91 +118,6 @@ printf "\n--------------------------------------( do_prune_src2 )---------------
 for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
-	local last_trans_snap="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
-	local last_trans_snap_num="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
-	local last_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
-
-		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-		echo "[DEBUG] src_set = ($src_set)" 1>&5
-		echo "[DEBUG] last_trans_snap = ($last_trans_snap)" 1>&5
-		echo "[DEBUG] last_trans_snap_num  = ($last_trans_snap_num)" 1>&5
-		echo "[DEBUG] last_snap_num = ($last_snap_num)" 1>&5
-		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-
-	if  [ -z $last_trans_snap_num  ] && [ "$s_type" = sbp ] ;then
-
-		echo "[info2] src_set $src_set has NOT been transfered yet , skipping prune" 1>&4
-
-	else
-
-		for i in m w d ;do
-		
-			printf '%55s\n' "--------------------[ $i ]----------------------" 1>&5
-			
-			# just for info
-			local mwdh
-			[ "$i" = "m" ] && mwdh=month
-			[ "$i" = "w" ] && mwdh=week
-			[ "$i" = "d" ] && mwdh=dai
-
-			local ls_k="s_k$i"
-			local pfix_stype="$pfix:stype:2:$i"
-			local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -${!ls_k})"
-			
-				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-				echo "[DEBUG] mwdh = ($mwdh)" 1>&5
-				echo "[DEBUG] ls_k = (${!ls_k})" 1>&5
-				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
-				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-				
-			if [ -z "$p_list" ] ;then
-			
-				echo "[info2] nothing to prune for ${mwdh}ly in $src_set" 1>&4
-
-			else
-
-				for p in $p_list ;do
-
-					local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
-
-					if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
-
-						echo "[info1] zfs destroy $p" 1>&3
-						$s_zfs destroy $p
-
-					elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
-
-						echo "[info1] zfs destroy $p" 1>&3
-						$s_zfs destroy $p
-
-					else
-
-						echo "[info2] NOT ok to destroy $p"  1>&4
-					fi
-
-				done
-
-			fi
-
-		done
-
-	fi
-
-	echo "------------------------------------------------------------------------------------------------" 1>&4
-
-done
-
-}
-
-
-
-do_prune_src3() {
-printf "\n--------------------------------------( do_prune_src3 )-----------------------------------------\n" 1>&4
-		# type3 src pruning
-
-for child in "${dataset_i_array[@]}" ;do
-
-	local src_set="$child"
 	local last_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 	local last_trans_snap="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
 	local last_trans_snap_num="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
@@ -233,7 +148,7 @@ for child in "${dataset_i_array[@]}" ;do
 			[ $i = h ] && mwdh=hourly
 
 			local ls_k="s_k$i"
-			local pfix_stype="$pfix:stype:3:$i"
+			local pfix_stype="$pfix:stype:2:$i"
 			local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -${!ls_k})"
 			
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
