@@ -68,31 +68,34 @@ for child in "${dataset_i_array[@]}" ;do
 		local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -$s_k)"
 
 		if [ -z "$p_list" ] ;then
+		
 			echo "[info2] nothing to prune in $src_set" 1>&4
-			continue
+		
+		else
+
+			for p in $p_list ;do
+
+				local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
+
+				if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
+
+					echo "[info1] zfs destroy $p" 1>&3
+					$s_zfs destroy $p
+
+				elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
+
+					echo "[info1] zfs destroy $p" 1>&3
+					$s_zfs destroy $p
+
+				else
+
+					echo "[info2] NOT ok to destroy $p"  1>&4
+
+				fi
+
+			done
+
 		fi
-
-		for p in $p_list ;do
-
-			local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
-
-			if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
-
-				echo "[info1] zfs destroy $p" 1>&3
-				$s_zfs destroy $p
-
-			elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
-
-				echo "[info1] zfs destroy $p" 1>&3
-				$s_zfs destroy $p
-
-			else
-
-				echo "[info2] NOT ok to destroy $p"  1>&4
-
-			fi
-
-		done
 
 	fi
 
@@ -142,30 +145,33 @@ for child in "${dataset_i_array[@]}" ;do
 			local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -${!ls_k})"
 
 			if [ -z "$p_list" ] ;then
+			
 				echo "[info2] nothing to prune for ${mwdh}ly in $src_set" 1>&4
-				continue
+
+			else
+
+				for p in $p_list ;do
+
+					local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
+
+					if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
+
+						echo "[info1] zfs destroy $p" 1>&3
+						$s_zfs destroy $p
+
+					elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
+
+						echo "[info1] zfs destroy $p" 1>&3
+						$s_zfs destroy $p
+
+					else
+
+						echo "[info2] NOT ok to destroy $p"  1>&4
+					fi
+
+				done
+
 			fi
-
-			for p in $p_list ;do
-
-				local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
-
-				if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
-
-					echo "[info1] zfs destroy $p" 1>&3
-					$s_zfs destroy $p
-
-				elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
-
-					echo "[info1] zfs destroy $p" 1>&3
-					$s_zfs destroy $p
-
-				else
-
-					echo "[info2] NOT ok to destroy $p"  1>&4
-				fi
-
-			done
 
 		done
 
@@ -219,30 +225,33 @@ for child in "${dataset_i_array[@]}" ;do
 			local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -${!ls_k})"
 
 			if [ -z "$p_list" ] ;then
+
 				echo "[info2] nothing to prune for ${mwdh}ly in $src_set" 1>&4
-				continue
+
+			else
+
+				for p in $p_list ;do
+
+					local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
+
+					if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
+
+						echo "[info1] zfs destroy $p" 1>&3
+						$s_zfs destroy $p
+
+					elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
+
+						echo "[info1] zfs destroy $p" 1>&3
+						$s_zfs destroy $p
+
+					else
+
+						echo "[info2] NOT ok to destroy $p"  1>&4
+					fi
+
+				done
+
 			fi
-
-			for p in $p_list ;do
-
-				local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
-
-				if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
-
-					echo "[info1] zfs destroy $p" 1>&3
-					$s_zfs destroy $p
-
-				elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
-
-					echo "[info1] zfs destroy $p" 1>&3
-					$s_zfs destroy $p
-
-				else
-
-					echo "[info2] NOT ok to destroy $p"  1>&4
-				fi
-
-			done
 
 		done
 
