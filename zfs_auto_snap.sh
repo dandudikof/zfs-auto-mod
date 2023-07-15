@@ -173,7 +173,7 @@ for child in "${dataset_i_array[@]}" ;do
 		pfix_sdate="$pfix:sdate:$Yn:$my:$wy"
 	else
 		i=d
-		mwdh=day
+		mwdh=dai
 		pfix_stype="$pfix:stype:2:d"
 		pfix_sdate="$pfix:sdate:$Yn:$my:$wy:$dm"
 	fi
@@ -184,6 +184,7 @@ for child in "${dataset_i_array[@]}" ;do
 	local current_snap="$src_set@${pfix}-t2-${DATE}_${TIME}-${i}"
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		echo "[DEBUG] mwdh = ($mwdh)" 1>&5
 		echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 		echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 		echo "[DEBUG] snap_check = ($snap_check)" 1>&5
@@ -192,12 +193,12 @@ for child in "${dataset_i_array[@]}" ;do
 
 	if [ -n "$snap_check" ] ;then
 
-		echo "[info2] snapshot $snap_check allready exists" 1>&4
+		echo "[info2] ${mwdh}ly snapshot $snap_check allready exists" 1>&4
 		echo "[info2] NOT doing zfs snapshot $current_snap" 1>&4
 
 	else
 
-		echo "[info2] snapshot $current_snap does NOT exist" 1>&4
+		echo "[info2] ${mwdh}ly snapshot $current_snap does NOT exist" 1>&4
 		echo "[info1] zfs snapshot $current_snap" 1>&3
 		$s_zfs snapshot -o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num $current_snap
 
@@ -229,12 +230,14 @@ for child in "${dataset_i_array[@]}" ;do
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	for i in m w d h ;do
-	
+
+		printf '%54s\n' "--------------------[ $i ]----------------------" 1>&5
+
 		# just for info
 		local mwdh
 		[ $i = m ] && mwdh=month
 		[ $i = w ] && mwdh=week
-		[ $i = d ] && mwdh=day
+		[ $i = d ] && mwdh=dai
 		[ $i = h ] && mwdh=hour
 
 		local pfix_sdate
@@ -251,6 +254,7 @@ for child in "${dataset_i_array[@]}" ;do
 		local current_snap="$src_set@${pfix}-t3-${DATE}_${TIME}-${i}"
 
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+			echo "[DEBUG] mwdh = ($mwdh)" 1>&5
 			echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 			echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 			echo "[DEBUG] need_snap = ($need_snap)" 1>&5
@@ -260,16 +264,16 @@ for child in "${dataset_i_array[@]}" ;do
 
 		if  [ "$need_snap" = 0 ] ;then
 			
-			echo "[info2] NO need for ${mwdh}'ly snapshot in $src_set" 1>&4
+			echo "[info2] NO need for ${mwdh}ly snapshots in $src_set" 1>&4
 
 		elif [ -n "$snap_check" ] ;then
 
-			echo "[info2] snapshot $snap_check exists" 1>&4
+			echo "[info2] ${mwdh}ly snapshot $snap_check exists" 1>&4
 			echo "[info2] NOT doing zfs snapshot $current_snap" 1>&4
 
 		else
 
-			echo "[info2] snapshot $current_snap does NOT exist" 1>&4
+			echo "[info2] ${mwdh}ly snapshot $current_snap does NOT exist" 1>&4
 			echo "[info1] zfs snapshot $current_snap" 1>&3
 
 			$s_zfs snapshot -o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num $current_snap
@@ -279,11 +283,9 @@ for child in "${dataset_i_array[@]}" ;do
 
 		fi
 
-		echo "------------------------------------------------------------------------------------------------" 1>&4
-		#printf "\n"
-
 	done
 
+	echo "------------------------------------------------------------------------------------------------" 1>&4
 
 done
 

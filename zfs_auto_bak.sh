@@ -220,17 +220,19 @@ else
 	fi
 
 	echo "[info2] dest set $dest_set does NOT exist" 1>&4
-	echo "[info1] zfs send $head_snap" 1>&3
 
 	if [ -n "$orig_snap" ] && [[ "$orig_incl" = d || "$orig_incl" = cl ]] ;then
 
 		echo "[DEBUG] ($src_set) is a clone, and origin is ($orig_snap)" 1>&5
+		echo "[info1] zfs send $orig_snap" 1>&3
+		echo "[info1] to ----> $head_snap" 1>&3
 		local zfs_send_cmd="$s_zfs send -pv -i $orig_snap $head_snap"
 		local zfs_recv_cmd="$d_zfs recv -uv $dest_set"
 
 	else
 
 		echo "[DEBUG] ($src_set) is not a clone, or origin is not on include list" 1>&5
+		echo "[info1] zfs send $head_snap" 1>&3
 		local zfs_send_cmd="$s_zfs send -pv $head_snap"
 		local zfs_recv_cmd="$d_zfs recv -uv $dest_set"
 
