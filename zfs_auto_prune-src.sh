@@ -42,7 +42,6 @@ do_everything() {
 do_prune_src1() {
 printf "\n--------------------------------------( do_prune_src1 )-----------------------------------------\n" 1>&4
 		# type1 src pruning
-		
 
 for child in "${dataset_i_array[@]}" ;do
 
@@ -66,7 +65,12 @@ for child in "${dataset_i_array[@]}" ;do
 
 		local pfix_stype="$pfix:stype:1"
 		local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -$s_k)"
-
+		
+				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+				echo "[DEBUG] s_k = ($s_k)" 1>&5
+				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
+				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+				
 		if [ -z "$p_list" ] ;then
 		
 			echo "[info2] nothing to prune in $src_set" 1>&4
@@ -111,7 +115,6 @@ do_prune_src2() {
 printf "\n--------------------------------------( do_prune_src2 )-----------------------------------------\n" 1>&4
 		# type2 src pruning
 
-
 for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
@@ -133,17 +136,25 @@ for child in "${dataset_i_array[@]}" ;do
 	else
 
 		for i in m w d ;do
-
+		
+			printf '%55s\n' "--------------------[ $i ]----------------------" 1>&5
+			
 			# just for info
 			local mwdh
 			[ "$i" = "m" ] && mwdh=month
 			[ "$i" = "w" ] && mwdh=week
-			[ "$i" = "d" ] && mwdh=day
-			
+			[ "$i" = "d" ] && mwdh=dai
+
 			local ls_k="s_k$i"
 			local pfix_stype="$pfix:stype:2:$i"
 			local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -${!ls_k})"
-
+			
+				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+				echo "[DEBUG] mwdh = ($mwdh)" 1>&5
+				echo "[DEBUG] ls_k = (${!ls_k})" 1>&5
+				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
+				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+				
 			if [ -z "$p_list" ] ;then
 			
 				echo "[info2] nothing to prune for ${mwdh}ly in $src_set" 1>&4
@@ -189,7 +200,6 @@ do_prune_src3() {
 printf "\n--------------------------------------( do_prune_src3 )-----------------------------------------\n" 1>&4
 		# type3 src pruning
 
-
 for child in "${dataset_i_array[@]}" ;do
 
 	local src_set="$child"
@@ -213,20 +223,28 @@ for child in "${dataset_i_array[@]}" ;do
 
 		for i in m w d h ;do
 
+			printf '%55s\n' "--------------------[ $i ]----------------------" 1>&5
+
 			# just for info
 			local mwdh
-			[ $i = m ] && mwdh=month
-			[ $i = w ] && mwdh=week
-			[ $i = d ] && mwdh=day
-			[ $i = h ] && mwdh=hour
+			[ $i = m ] && mwdh=monthly
+			[ $i = w ] && mwdh=weekly
+			[ $i = d ] && mwdh=daily
+			[ $i = h ] && mwdh=hourly
 
 			local ls_k="s_k$i"
 			local pfix_stype="$pfix:stype:3:$i"
 			local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -${!ls_k})"
+			
+				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+				echo "[DEBUG] mwdh = ($mwdh)" 1>&5
+				echo "[DEBUG] ls_k = (${!ls_k})" 1>&5
+				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
+				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 			if [ -z "$p_list" ] ;then
 
-				echo "[info2] nothing to prune for ${mwdh}ly in $src_set" 1>&4
+				echo "[info2] nothing to prune for ${mwdh} in $src_set" 1>&4
 
 			else
 
