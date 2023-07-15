@@ -22,7 +22,7 @@ for more advanced users, instead of waiting hours,days,weeks for crontabs to run
 	- run ramdisk_test-sets.sh to ceate test dataset structure and set zfs user properties
 
 *	run date_count.sh (peek inside before you do) 
-	*config/type[1,2,3].cfg are ready for test runs of date_count.sh on test pools*
+	*config/type[1,2].cfg are ready for test runs of date_count.sh on test pools*
 	
 (to run zfs commands from cli as a user, like setting zfs properties or creating datasets etc...)  
 (add /sbin to $PATH or softlink to /sbin/zfs from ~/bin/zfs if in users $PATH)
