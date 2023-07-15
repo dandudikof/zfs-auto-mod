@@ -37,7 +37,7 @@ for lset in $lsets ; do
 		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
 		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
 		
-		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=d
+		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=$set_type
 		[ "$clone" = "-" ] && unset clone
 
 		if [ "$excl" = "1" ] ;then
