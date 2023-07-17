@@ -125,11 +125,15 @@ local dest_set=${dest_a_array[$1]}
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
 	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-$d_zfs list -H -o name $dest_set > /dev/null 2>&1
+$d_zfs list -t snapshot -H -o name $dest_set@$pfix-parent > /dev/null 2>&1
 if [ $? = 0 ] ;then
 
-	echo "[info2] dest set $dest_set exists" 1>&4
+	echo "[info2] dest parent snapshot $dest_set@$pfix-parent exists" 1>&4
 	return
+
+else 
+
+	echo "[info2] dest parent snapshot $dest_set@$pfix-parent does NOT exists" 1>&4	
 
 fi
 
@@ -142,7 +146,6 @@ if [ $? != 0 ] ;then
 
 else
 
-	echo "[info2] parent set $dest_set does NOT exist" 1>&4
 	echo "[info1] zfs send $src_set@$pfix-parent" 1>&3
 
 	local zfs_send_cmd="$s_zfs send -pv $src_set@$pfix-parent"
