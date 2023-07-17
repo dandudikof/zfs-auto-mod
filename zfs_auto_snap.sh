@@ -149,11 +149,13 @@ for child in "${dataset_i_array[@]}" ;do
 	local src_set="$child"
 	local last_snap="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
 	local snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
-
+	local written_size="$($s_zfs get written -H -p -o value $src_set)"
+	
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
 		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
+		echo "[DEBUG] written_size = ($written_size)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	for i in m w d h ;do
@@ -178,14 +180,18 @@ for child in "${dataset_i_array[@]}" ;do
 		local pfix_stype="$pfix:stype:2:$i"
 		local need_snap="$($s_zfs get $pfix:nsnap:$i -s local,received,inherited -H -o value $src_set)"
 		local snap_check="$($s_zfs get $pfix_sdate -t snapshot -s local,received -H -o name $src_set)"
+		local minws_check="$($s_zfs get $pfix:minws:$i -s local,received,inherited -H -o value $src_set)"
 		local current_snap="$src_set@${pfix}-t2-${DATE}_${TIME}-${i}"
-
+		
+		[ -z "$minws_check" ] && minws_check=0
+		
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 			echo "[DEBUG] mwdh = ($mwdh)" 1>&5
-			echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 			echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
+			echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 			echo "[DEBUG] need_snap = ($need_snap)" 1>&5
 			echo "[DEBUG] snap_check = ($snap_check)" 1>&5
+			echo "[DEBUG] minws_check = ($minws_check)" 1>&5
 			echo "[DEBUG] current_snap = ($current_snap)" 1>&5
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
@@ -196,6 +202,11 @@ for child in "${dataset_i_array[@]}" ;do
 		elif [ -n "$snap_check" ] ;then
 
 			echo "[info2] ${mwdh}ly snapshot $snap_check exists" 1>&4
+			echo "[info2] NOT doing zfs snapshot $current_snap" 1>&4
+			
+		elif [ "$written_size" -lt "$minws_check" ] && [ -n "$last_snap" ] ;then
+
+			echo "[info2] ${mwdh}ly snapshot has NOT reached min_wsize = ($minws_check) bytes" 1>&4
 			echo "[info2] NOT doing zfs snapshot $current_snap" 1>&4
 
 		else
