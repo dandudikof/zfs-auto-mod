@@ -91,10 +91,9 @@ local dest_set=${dest_a_array[$1]}
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
 	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-$d_zfs list -H -o name $dest_set > /dev/null 2>&1
-if [ $? = 0 ] ;then
+if $d_zfs list -H -o name $dest_set > /dev/null 2>&1 ;then
 
-	echo "[info2] dest_set $dest_set exists" 1>&4
+	echo "[info2] dest set $dest_set exists" 1>&4
 
 else
 
@@ -123,24 +122,14 @@ local dest_set=${dest_a_array[$1]}
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
 	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-$d_zfs list -t snapshot -H -o name $dest_set@$pfix-parent > /dev/null 2>&1
-if [ $? = 0 ] ;then
+if $d_zfs list -t snapshot -H -o name $dest_set@$pfix-parent > /dev/null 2>&1 ;then
 
 	echo "[info2] dest parent snapshot $dest_set@$pfix-parent exists" 1>&4
-	return
 
-else 
+elif ! $s_zfs list -t snapshot -H -o name $src_set@$pfix-parent > /dev/null 2>&1 ;then
 
-	echo "[info2] dest parent snapshot $dest_set@$pfix-parent does NOT exists" 1>&4	
-
-fi
-
-$s_zfs list -t snapshot -H -o name $src_set@$pfix-parent > /dev/null 2>&1
-if [ $? != 0 ] ;then
-
-	echo "[ERROR] src set $src_set@$pfix-parent does NOT exists" 1>&3
+	echo "[ERROR] src parent snapshot $src_set@$pfix-parent does NOT exist" 1>&3
 	echo "[ERROR] can NOT do parent send for $src_set@$pfix-parent" 1>&3
-	return
 
 else
 
@@ -184,8 +173,7 @@ local dest_set=${dest_a_array[$1]}
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
 	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-$d_zfs list -H -o name $dest_set > /dev/null 2>&1
-if [ $? = 0 ] ;then
+if $d_zfs list -H -o name $dest_set > /dev/null 2>&1 ; then
 
 	 echo "[info2] dest set $dest_set exist" 1>&4
 
@@ -211,9 +199,7 @@ else
 		echo "[ERROR] can NOT do head send for $src_set" 1>&3
 		return 1
 
-	fi
-
-	if [ -n "$orig_snap" ] && ! [[ "$orig_incl" = d || "$orig_incl" = cl ]] ;then
+	elif [ -n "$orig_snap" ] && ! [[ "$orig_incl" = d || "$orig_incl" = cl ]] ;then
 
 		echo "[WARNING] > origin set ($orig_set) is NOT on the dataset include list" 1>&3
 		echo "[WARNING] >> clone set ($src_set) will be replicated, but NOT as a clone on dest" 1>&3
@@ -275,10 +261,9 @@ local dest_set=${dest_a_array[$1]}
 
 for src_snap in $($s_zfs list -t snapshot -H -o name $src_set | tac ) ;do
 
-		local snap="${src_snap#$src_set@}"
+		local snap="${src_snap#*@}"
 
-	$d_zfs list -t snapshot -H -o name $dest_set@$snap > /dev/null 2>&1
-	if [ $? = 0 ] ;then
+	if $d_zfs list -t snapshot -H -o name $dest_set@$snap > /dev/null 2>&1 ;then
 
 		local s_guid="$($s_zfs get guid -t snapshot -H -o value $src_snap)"
 		local d_guid="$($d_zfs get guid -t snapshot -H -o value $dest_set@$snap)"
@@ -311,8 +296,7 @@ local dest_set=${dest_a_array[$1]}
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
 	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-$d_zfs list -H -o name $dest_set > /dev/null 2>&1
-if [ $? != 0 ] ; then
+if ! $d_zfs list -H -o name $dest_set > /dev/null 2>&1 ; then
 
 	echo "[ERROR] dest set $dest_set does NOT exist" 1>&3
 	echo "[ERROR] can NOT do incr send for $src_set" 1>&3
