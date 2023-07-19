@@ -131,6 +131,11 @@ elif ! $s_zfs list -t snapshot -H -o name $src_set@$pfix-parent > /dev/null 2>&1
 	echo "[ERROR] src parent snapshot $src_set@$pfix-parent does NOT exist" 1>&3
 	echo "[ERROR] can NOT do parent send for $src_set@$pfix-parent" 1>&3
 
+elif ! $d_zfs list -H -o name ${dest_set%/*} > /dev/null 2>&1 ;then
+
+	echo "[ERROR] dest ../ set ${dest_set%/*} does NOT exists" 1>&3
+	echo "[ERROR] can NOT do parent send for $src_set@$pfix-parent" 1>&3
+
 else
 
 	echo "[info1] zfs p send $src_set@$pfix-parent" 1>&3
@@ -176,6 +181,11 @@ local dest_set=${dest_a_array[$1]}
 if $d_zfs list -H -o name $dest_set > /dev/null 2>&1 ; then
 
 	 echo "[info2] dest set $dest_set exist" 1>&4
+
+elif ! $d_zfs list -H -o name ${dest_set%/*} > /dev/null 2>&1 ;then
+
+	echo "[ERROR] dest ../ set ${dest_set%/*} does NOT exists" 1>&3
+	echo "[ERROR] can NOT do head send for $src_set" 1>&3
 
 else
 
