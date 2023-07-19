@@ -95,12 +95,17 @@ if $d_zfs list -H -o name $dest_set > /dev/null 2>&1 ;then
 
 	echo "[info2] dest set $dest_set exists" 1>&4
 
+elif ! $d_zfs list -H -o name ${dest_set%/*} > /dev/null 2>&1 ;then
+
+	echo "[ERROR] dest ../ set ${dest_set%/*} does NOT exists" 1>&3
+	echo "[ERROR] can NOT create dest set $dest_set" 1>&3
+
 else
 
 	echo "[info2] dest set $dest_set does NOT exist" 1>&4
 	echo "[info1] zfs create $dest_set" 1>&3
 
-	local zfs_cmd="$d_zfs create -p -o mountpoint=none $dest_set"
+	local zfs_cmd="$d_zfs create -o mountpoint=none $dest_set"
 	echo "[ZFS_CMD] ($zfs_cmd)" 1>&5
 	$zfs_cmd
 
@@ -131,6 +136,11 @@ if $d_zfs list -t snapshot -H -o name $dest_set@$pfix-parent > /dev/null 2>&1 ;t
 elif ! $s_zfs list -t snapshot -H -o name $src_set@$pfix-parent > /dev/null 2>&1 ;then
 
 	echo "[ERROR] src parent snapshot $src_set@$pfix-parent does NOT exist" 1>&3
+	echo "[ERROR] can NOT do parent send for $src_set@$pfix-parent" 1>&3
+
+elif ! $d_zfs list -H -o name ${dest_set%/*} > /dev/null 2>&1 ;then
+
+	echo "[ERROR] dest ../ set ${dest_set%/*} does NOT exists" 1>&3
 	echo "[ERROR] can NOT do parent send for $src_set@$pfix-parent" 1>&3
 
 else
@@ -179,6 +189,11 @@ local dest_set=${dest_a_array[$1]}
 if $d_zfs list -H -o name $dest_set > /dev/null 2>&1 ; then
 
 	 echo "[info2] dest set $dest_set exist" 1>&4
+
+elif ! $d_zfs list -H -o name ${dest_set%/*} > /dev/null 2>&1 ;then
+
+	echo "[ERROR] dest ../ set ${dest_set%/*} does NOT exists" 1>&3
+	echo "[ERROR] can NOT do head send for $src_set" 1>&3
 
 else
 
