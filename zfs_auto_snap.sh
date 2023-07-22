@@ -43,7 +43,7 @@ do_snap_parent() {
 printf "\n--------------------------------------( do_snap_parent )----------------------------------------\n" 1>&4
 			# snaps s_pool and parent datasets to set@$pfix-parent
 
-for child in "${parent_i_array[@]}" ;do
+for child in "${parent_array[@]}" ;do
 
 	local src_set=$child
 	local parent_check="$($s_zfs list -H -o name $src_set@$pfix-parent 2> /dev/null)"
@@ -78,7 +78,7 @@ do_snap_dataset1() {
 printf "\n--------------------------------------( do_snap_dataset1 )--------------------------------------\n" 1>&4
 		# type1 snap
 
-for child in "${dataset_i_array[@]}" ;do
+for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
 	local last_snap="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
@@ -137,7 +137,7 @@ do_snap_dataset2() {
 printf "\n--------------------------------------( do_snap_dataset2 )--------------------------------------\n" 1>&4
 		# type2 snap
 
-for child in "${dataset_i_array[@]}" ;do
+for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
 	local last_snap="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"

@@ -43,10 +43,10 @@ do_prune_dest1() {
 printf "\n--------------------------------------( do_prune_dest1 )----------------------------------------\n" 1>&4
 		# type1 dest pruning
 
-for child in "${dataset_i_array[@]}" ;do
+for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
-	local dest_set="${dest_a_array[$child]}"
+	local dest_set="${dest_Array[$child]}"
 	
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
@@ -121,10 +121,10 @@ do_prune_dest2() {
 printf "\n--------------------------------------( do_prune_dest2 )----------------------------------------\n" 1>&4
 		# type2 dest pruning
 
-for child in "${dataset_i_array[@]}" ;do
+for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
-	local dest_set="${dest_a_array[$child]}"
+	local dest_set="${dest_Array[$child]}"
 	
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5

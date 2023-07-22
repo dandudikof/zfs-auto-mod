@@ -17,12 +17,12 @@ else
 	done
 fi
 
-include_i_array+=($s_pool)
-parent_i_array+=($s_pool)
-include_a_array+=([$s_pool]=p)
+include_array+=($s_pool)
+parent_array+=($s_pool)
+include_Array+=([$s_pool]=p)
 
-[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
-[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
+[ "$strip_pool"  = 1 ] && dest_Array+=([$s_pool]="$d_path")
+[ "$strip_pool" != 1 ] && dest_Array+=([$s_pool]="$d_path/$s_pool")
 
 for lset in $lsets ; do
 	for src_child in $($s_zfs list -Hr -o name $lset) ;do
@@ -42,34 +42,34 @@ for lset in $lsets ; do
 
 		if [ "$excl" = "1" ] ;then
 
-					exclude_i_array+=($src_child)
+					exclude_array+=($src_child)
 					#echo "[SORT] classified as excluded ($src_child)"
 		
 		elif [ "$lret" = "p" ] ;then
 
-					include_i_array+=($src_child)
-					parent_i_array+=($src_child)
-					include_a_array+=([$src_child]=p)
-					dest_a_array+=([$src_child]="$dest_child")
+					include_array+=($src_child)
+					parent_array+=($src_child)
+					include_Array+=([$src_child]=p)
+					dest_Array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as parent ($src_child)"
 
 		elif [ "$lret" = "c" ] ;then
 
-					include_i_array+=($src_child)
-					container_i_array+=($src_child)
-					include_a_array+=([$src_child]=c)
-					dest_a_array+=([$src_child]="$dest_child")
+					include_array+=($src_child)
+					container_array+=($src_child)
+					include_Array+=([$src_child]=c)
+					dest_Array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as container ($src_child)"
 
 		else
 
-					include_i_array+=($src_child)
-					dataset_i_array+=($src_child)
-					[ "$clone" ] || include_a_array+=([$src_child]=d)
-					[ "$clone" ] && include_a_array+=([$src_child]=cl)
-					[ "$clone" ] && clone_i_array+=($src_child)
-					[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
-					dest_a_array+=([$src_child]="$dest_child")
+					include_array+=($src_child)
+					dataset_array+=($src_child)
+					[ "$clone" ] || include_Array+=([$src_child]=d)
+					[ "$clone" ] && include_Array+=([$src_child]=cl)
+					[ "$clone" ] && clone_array+=($src_child)
+					[ "$clone" ] && clone_Array+=([$src_child]="$clone")
+					dest_Array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as else-dataset ($src_child)"
 
 		fi
@@ -99,12 +99,12 @@ else
 	done
 fi
 
-include_i_array+=($s_pool)
-parent_i_array+=($s_pool)
-include_a_array+=([$s_pool]=p)
+include_array+=($s_pool)
+parent_array+=($s_pool)
+include_Array+=([$s_pool]=p)
 
-[ "$strip_pool"  = 1 ] && dest_a_array+=([$s_pool]="$d_path")
-[ "$strip_pool" != 1 ] && dest_a_array+=([$s_pool]="$d_path/$s_pool")
+[ "$strip_pool"  = 1 ] && dest_Array+=([$s_pool]="$d_path")
+[ "$strip_pool" != 1 ] && dest_Array+=([$s_pool]="$d_path/$s_pool")
 
 for lset in $lsets ; do
 	for src_child in $($s_zfs list -Hr -o name $lset) ;do
@@ -124,34 +124,34 @@ for lset in $lsets ; do
 		case "$lret" in
 
 			p)
-						include_i_array+=($src_child)
-						parent_i_array+=($src_child)
-						include_a_array+=([$src_child]=p)
-						dest_a_array+=([$src_child]="$dest_child")
+						include_array+=($src_child)
+						parent_array+=($src_child)
+						include_Array+=([$src_child]=p)
+						dest_Array+=([$src_child]="$dest_child")
 						#echo "[SORT] classified as parent ($src_child)"
 			;;
 
 			c)
-						include_i_array+=($src_child)
-						container_i_array+=($src_child)
-						include_a_array+=([$src_child]=c)
-						dest_a_array+=([$src_child]="$dest_child")
+						include_array+=($src_child)
+						container_array+=($src_child)
+						include_Array+=([$src_child]=c)
+						dest_Array+=([$src_child]="$dest_child")
 						#echo "[SORT] classified as container ($src_child)"
 			;;
 
 			d)
-						include_i_array+=($src_child)
-						dataset_i_array+=($src_child)
-						[ "$clone" ] || include_a_array+=([$src_child]=d)
-						[ "$clone" ] && include_a_array+=([$src_child]=cl)
-						[ "$clone" ] && clone_i_array+=($src_child)
-						[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
-						dest_a_array+=([$src_child]="$dest_child")
+						include_array+=($src_child)
+						dataset_array+=($src_child)
+						[ "$clone" ] || include_Array+=([$src_child]=d)
+						[ "$clone" ] && include_Array+=([$src_child]=cl)
+						[ "$clone" ] && clone_array+=($src_child)
+						[ "$clone" ] && clone_Array+=([$src_child]="$clone")
+						dest_Array+=([$src_child]="$dest_child")
 						#echo "[SORT] classified as dataset ($src_child)"
 			;;
 
 			*)
-						exclude_i_array+=($src_child)
+						exclude_array+=($src_child)
 						#echo "[SORT] classified as else ($src_child)"
 			;;
 
@@ -171,38 +171,38 @@ do_verblist
 
 do_verblist () {
 
-[ "$verblist" = 1 ] && do_print_include_i_array
+[ "$verblist" = 1 ] && do_print_include_array
 
-[ "$verb_incl"  = 1 ] && do_print_include_a_array
-[ "$verb_dest"  = 1 ] && do_print_dest_a_array
-[ "$verb_clone" = 1 ] && do_print_clone_a_array
+[ "$verb_incl"  = 1 ] && do_print_include_Array
+[ "$verb_dest"  = 1 ] && do_print_dest_Array
+[ "$verb_clone" = 1 ] && do_print_clone_Array
 
 
 }
 
 
 
-do_print_include_i_array () {
-printf "\n--------------------------------------( do_print_include_i_array )------------------------------\n" 1>&3
+do_print_include_array () {
+printf "\n--------------------------------------( do_print_include_array )------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
-	printf '[LIST1] %20s\n' "include_i_array :" 1>&3
-	printf '[LIST1]                      %s\n' "${include_i_array[@]}" 1>&3
+	printf '[LIST1] %20s\n' "include_array :" 1>&3
+	printf '[LIST1]                      %s\n' "${include_array[@]}" 1>&3
 
-	printf "[LIST1] %20s\n" 'parent_i_array :' 1>&3
-	printf "[LIST1]                      %s\n" "${parent_i_array[@]}" 1>&3
+	printf "[LIST1] %20s\n" 'parent_array :' 1>&3
+	printf "[LIST1]                      %s\n" "${parent_array[@]}" 1>&3
 
-	printf "[LIST1] %20s\n" 'container_i_array :' 1>&3
-	printf "[LIST1]                      %s\n" "${container_i_array[@]}" 1>&3
+	printf "[LIST1] %20s\n" 'container_array :' 1>&3
+	printf "[LIST1]                      %s\n" "${container_array[@]}" 1>&3
 
-	printf "[LIST1] %20s\n" "dataset_i_array :" 1>&3
-	printf "[LIST1]                      %s\n" "${dataset_i_array[@]}" 1>&3
+	printf "[LIST1] %20s\n" "dataset_array :" 1>&3
+	printf "[LIST1]                      %s\n" "${dataset_array[@]}" 1>&3
 
-	printf "[LIST1] %20s\n" "clone_i_array :" 1>&3
-	printf "[LIST1]                      %s\n" "${clone_i_array[@]}" 1>&3
+	printf "[LIST1] %20s\n" "clone_array :" 1>&3
+	printf "[LIST1]                      %s\n" "${clone_array[@]}" 1>&3
 
-	printf "[LIST1] %20s\n" 'exclude_i_array :' 1>&3
-	printf "[LIST1]                      %s\n" "${exclude_i_array[@]}" 1>&3
+	printf "[LIST1] %20s\n" 'exclude_array :' 1>&3
+	printf "[LIST1]                      %s\n" "${exclude_array[@]}" 1>&3
 
 	echo "------------------------------------------------------------------------------------------------" 1>&3
 
@@ -210,14 +210,14 @@ printf "\n--------------------------------------( do_print_include_i_array )----
 
 
 
-do_print_include_a_array () {
-printf "\n--------------------------------------( do_print_include_a_array )------------------------------\n" 1>&3
+do_print_include_Array () {
+printf "\n--------------------------------------( do_print_include_Array )------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
-	printf '[LIST2] %20s\n' "include_a_array :" 1>&3
+	printf '[LIST2] %20s\n' "include_Array :" 1>&3
 
-	for i in ${!include_a_array[@]} ;do
-		printf '[LIST2] %18s = %s\n' "${include_a_array[$i]}" "$i" 1>&3
+	for i in ${!include_Array[@]} ;do
+		printf '[LIST2] %18s = %s\n' "${include_Array[$i]}" "$i" 1>&3
 	done
 
 	echo "------------------------------------------------------------------------------------------------" 1>&3
@@ -226,30 +226,30 @@ printf "\n--------------------------------------( do_print_include_a_array )----
 
 
 
-do_print_dest_a_array () {
-printf "\n--------------------------------------( do_print_dest_a_array )---------------------------------\n" 1>&3
+do_print_dest_Array () {
+printf "\n--------------------------------------( do_print_dest_Array )---------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
-	printf '[LIST3] %20s\n' "dest_a_array :" 1>&3
+	printf '[LIST3] %20s\n' "dest_Array :" 1>&3
 
-	for i in ${!dest_a_array[@]} ;do
+	for i in ${!dest_Array[@]} ;do
 		printf '[LIST3] %18s = %s\n' "src <"  "$i" 1>&3
-		printf '[LIST3] %18s = %s\n' "dest >" "${dest_a_array[$i]}" 1>&3
+		printf '[LIST3] %18s = %s\n' "dest >" "${dest_Array[$i]}" 1>&3
 	done
 
 	echo "------------------------------------------------------------------------------------------------" 1>&3
 
 }
 
-do_print_clone_a_array () {
-printf "\n--------------------------------------( do_print_clone_a_array )--------------------------------\n" 1>&3
+do_print_clone_Array () {
+printf "\n--------------------------------------( do_print_clone_Array )--------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
-	printf '[LIST4] %20s\n' "clone_a_array :"  1>&3
+	printf '[LIST4] %20s\n' "clone_Array :"  1>&3
 
-	for i in ${!clone_a_array[@]} ;do
+	for i in ${!clone_Array[@]} ;do
 		printf '[LIST4] %20s %s\n' "clone < ="  "$i" 1>&3
-		printf '[LIST4] %20s %s\n' "origin > =" "${clone_a_array[$i]}" 1>&3
+		printf '[LIST4] %20s %s\n' "origin > =" "${clone_Array[$i]}" 1>&3
 	done
 
 	echo "------------------------------------------------------------------------------------------------" 1>&3
@@ -260,15 +260,15 @@ printf "\n--------------------------------------( do_print_clone_a_array )------
 
 do_declare_arrays () {
 
-declare -ag include_i_array
-declare -ag parent_i_array
-declare -ag container_i_array
-declare -ag dataset_i_array
-declare -ag exclude_i_array
-declare -ag clone_i_array
-declare -Ag include_a_array
-declare -Ag dest_a_array
-declare -Ag clone_a_array
+declare -ag include_array
+declare -ag parent_array
+declare -ag container_array
+declare -ag dataset_array
+declare -ag exclude_array
+declare -ag clone_array
+declare -Ag include_Array
+declare -Ag dest_Array
+declare -Ag clone_Array
 
 }
 

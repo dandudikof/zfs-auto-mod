@@ -45,9 +45,9 @@ do_backup_sort() {
 
 [ "$d_path" != "$d_pool" ] && do_backup_container "$d_path"
 
-for i in "${include_i_array[@]}" ;do
+for i in "${include_array[@]}" ;do
 
-	case "${include_a_array[$i]}" in
+	case "${include_Array[$i]}" in
 	
 		c)
 			do_backup_container "$i" ;;
@@ -66,7 +66,7 @@ for i in "${include_i_array[@]}" ;do
 
 done
 
-for i in "${clone_i_array[@]}" ;do
+for i in "${clone_array[@]}" ;do
 
 	do_backup_head "$i"
 	do_backup_incr "$i"
@@ -82,7 +82,7 @@ printf "\n--------------------------------------( do_backup_container )---------
 		# checks for and creates d_path and container sets
 
 local src_set=$1
-local dest_set=${dest_a_array[$1]}
+local dest_set=${dest_Array[$1]}
 
 [ "$src_set" = "$d_path" ] && dest_set=$d_path # do not append src_set if src_set is d_path
 
@@ -115,7 +115,7 @@ printf "\n--------------------------------------( do_backup_parent )------------
 		# checks for and replicates parent sets
 
 local src_set="$1"
-local dest_set=${dest_a_array[$1]}
+local dest_set=${dest_Array[$1]}
 
 	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 	echo "[DEBUG] src_set = ($src_set)" 1>&5
@@ -171,7 +171,7 @@ printf "\n--------------------------------------( do_backup_head )--------------
 		# checks for and replicates head snaps
 
 local src_set="$1"
-local dest_set=${dest_a_array[$1]}
+local dest_set=${dest_Array[$1]}
 
 	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 	echo "[DEBUG] src_set = ($src_set)" 1>&5
@@ -191,9 +191,9 @@ else
 
 	local head_snap="$($s_zfs list -t snapshot -H -o name $src_set | head -1)"
 	local head_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $head_snap)"
-	local orig_snap="${clone_a_array["${src_set:-null}"]}"
-	local orig_set="${clone_a_array["${src_set:-null}"]%@*}"
-	local orig_incl="${include_a_array["${orig_set:-null}"]}"
+	local orig_snap="${clone_Array["${src_set:-null}"]}"
+	local orig_set="${clone_Array["${src_set:-null}"]%@*}"
+	local orig_incl="${include_Array["${orig_set:-null}"]}"
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] head_snap = ($head_snap)" 1>&5
@@ -267,7 +267,7 @@ do_match_snap(){
 		# find last matching src and dest snapshots for incr send
 
 local src_set="$1"
-local dest_set=${dest_a_array[$1]}
+local dest_set=${dest_Array[$1]}
 
 for src_snap in $($s_zfs list -t snapshot -H -o name $src_set | tac ) ;do
 
@@ -299,7 +299,7 @@ printf "\n--------------------------------------( do_backup_incr )--------------
 		# incremental send from last matching dest snap to last source snap
 
 local src_set="$1"
-local dest_set=${dest_a_array[$1]}
+local dest_set=${dest_Array[$1]}
 
 	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 	echo "[DEBUG] src_set = ($src_set)" 1>&5
