@@ -67,8 +67,8 @@ for lset in $lsets ; do
 					dataset_array+=($src_child)
 					[ "$clone" ] || include_Array+=([$src_child]=d)
 					[ "$clone" ] && include_Array+=([$src_child]=cl)
-					[ "$clone" ] && clone_array+=($src_child)
-					[ "$clone" ] && clone_Array+=([$src_child]="$clone")
+					[ "$clone" ] && temp_clone_array+=($src_child)
+					[ "$clone" ] && temp_clone_Array+=([$src_child]="$clone")
 					dest_Array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as else-dataset ($src_child)"
 
@@ -77,6 +77,8 @@ for lset in $lsets ; do
 	done
 
 done
+
+do_clone_array_sort
 
 do_verblist
 
@@ -144,8 +146,8 @@ for lset in $lsets ; do
 						dataset_array+=($src_child)
 						[ "$clone" ] || include_Array+=([$src_child]=d)
 						[ "$clone" ] && include_Array+=([$src_child]=cl)
-						[ "$clone" ] && clone_array+=($src_child)
-						[ "$clone" ] && clone_Array+=([$src_child]="$clone")
+						[ "$clone" ] && temp_clone_array+=($src_child)
+						[ "$clone" ] && temp_clone_Array+=([$src_child]="$clone")
 						dest_Array+=([$src_child]="$dest_child")
 						#echo "[SORT] classified as dataset ($src_child)"
 			;;
@@ -163,7 +165,62 @@ for lset in $lsets ; do
 
 done
 
+do_clone_array_sort
+
 do_verblist
+
+}
+
+
+
+do_clone_array_sort () {
+printf "\n--------------------------------------( do_clone_array_sort )-----------------------------------\n" 1>&5
+		# re-sorting of clone arrays for correct order in clone of clone situations
+
+declare -a sort_clone_array
+
+local clone
+
+for clone in "${temp_clone_array[@]}" ;do
+
+	unset origin_clone_check
+	
+	until [ "$origin_clone_check" = end ] ;do 
+		
+		local origin_set="${temp_clone_Array["${clone:-null}"]%@*}"
+		local origin_clone_check="${temp_clone_Array["${origin_set:-null}"]:-end}"
+		
+		if [ "$origin_clone_check" != end ] ;then
+		
+			sort_clone_array+=($clone)
+			clone=$origin_set
+			
+		else
+			
+			sort_clone_array+=($clone)
+			
+		fi
+	
+	done
+	
+done
+
+unset clone #just in case
+
+for ((i=${#sort_clone_array[@]}-1; i>=0; i--)) ;do
+	
+	clone="${sort_clone_array[$i]}"
+		
+	[ "${clone_Array["$clone"]}" ] && continue
+	
+	clone_array+=($clone)
+	clone_Array+=([$clone]=${temp_clone_Array[$clone]})
+
+done
+
+unset temp_clone_array
+unset temp_clone_Array
+unset sort_clone_array
 
 }
 
@@ -182,8 +239,39 @@ do_verblist () {
 
 
 
+do_print_temp_clone_arrays () {
+printf "\n--------------------------------------( do_print_temp_clone_arrays )----------------------------\n" 1>&3
+
+	printf "[LIST01] %20s\n" "temp_clone_array :" 1>&3
+	printf "[LIST01]                      %s\n" "${temp_clone_array[@]}" 1>&3
+
+	printf '[LIST01] %20s\n' "temp_clone_Array :"  1>&3
+
+	for i in ${!temp_clone_Array[@]} ;do
+		printf '[LIST01] %20s %s\n' "clone < ="  "$i" 1>&3
+		printf '[LIST01] %20s %s\n' "origin > =" "${temp_clone_Array[$i]}" 1>&3
+	done
+
+	echo "------------------------------------------------------------------------------------------------" 1>&3
+	
+}
+
+
+
+do_print_sort_clone_array () {
+printf "\n--------------------------------------( do_print_sort_clone_array )---------------------------\n" 1>&3
+
+	printf "[LIST02] %20s\n" "sort_clone_array :" 1>&3
+	printf "[LIST02]                      %s\n" "${sort_clone_array[@]}" 1>&3
+
+	echo "------------------------------------------------------------------------------------------------" 1>&3
+
+}
+
+
+
 do_print_include_array () {
-printf "\n--------------------------------------( do_print_include_array )------------------------------\n" 1>&3
+printf "\n--------------------------------------( do_print_include_array )--------------------------------\n" 1>&3
 	#sleep 0.1 # to sync logging
 
 	printf '[LIST1] %20s\n' "include_array :" 1>&3
@@ -258,6 +346,7 @@ printf "\n--------------------------------------( do_print_clone_Array )--------
 
 
 
+
 do_declare_arrays () {
 
 declare -ag include_array
@@ -265,9 +354,11 @@ declare -ag parent_array
 declare -ag container_array
 declare -ag dataset_array
 declare -ag exclude_array
+declare -ag temp_clone_array
 declare -ag clone_array
 declare -Ag include_Array
 declare -Ag dest_Array
+declare -Ag temp_clone_Array
 declare -Ag clone_Array
 
 }
