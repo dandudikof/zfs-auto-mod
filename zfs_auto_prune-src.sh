@@ -44,7 +44,7 @@ printf "\n--------------------------------------( do_prune_src1 )---------------
 		# type1 src pruning
 		
 
-for child in "${dataset_i_array[@]}" ;do
+for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
 	local last_trans_snap="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
@@ -117,7 +117,7 @@ printf "\n--------------------------------------( do_prune_src2 )---------------
 		# type2 src pruning
 
 
-for child in "${dataset_i_array[@]}" ;do
+for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
 	local last_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
