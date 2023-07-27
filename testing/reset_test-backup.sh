@@ -6,12 +6,11 @@
 
 cfg1=../config/type1.cfg
 cfg2=../config/type2.cfg
-cfg3=../config/type3.cfg
 
 
 do_main () {
 
-	for cfg in {$cfg1,$cfg2,$cfg3} ;do
+	for cfg in {$cfg1,$cfg2} ;do
 
 		source $cfg
 

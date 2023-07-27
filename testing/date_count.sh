@@ -13,13 +13,12 @@
 
 # (can edit/debug rest of script/configs while running and tailing logs, except this file)
 
-echo puase > /tmp/auto-pause	# change to pause to enable paused state on start
+echo run > /tmp/auto-pause	# change to pause to enable paused state on start
 
 echo -e "\n-------------------------------- $(date +%T) --------------------------------\n"
 
 cfg1=../config/type1.cfg
 cfg2=../config/type2.cfg
-cfg3=../config/type3.cfg
 
 log_dir=/ramdisk/auto
 
@@ -53,7 +52,6 @@ for my in {01..05} ;do
 			
 			../zfs_auto_snap.sh $cfg1 $pass
 			../zfs_auto_snap.sh $cfg2 $pass
-			../zfs_auto_snap.sh $cfg3 $pass
 
 		done
 		
@@ -67,13 +65,10 @@ for my in {01..05} ;do
 			
 			../zfs_auto_bak.sh $cfg1 $pass
 			../zfs_auto_bak.sh $cfg2 $pass
-			../zfs_auto_bak.sh $cfg3 $pass
 			../zfs_auto_prune-src.sh $cfg1 $pass
 			../zfs_auto_prune-src.sh $cfg2 $pass
-			../zfs_auto_prune-src.sh $cfg3 $pass
 			../zfs_auto_prune-dest.sh $cfg1 $pass
 			../zfs_auto_prune-dest.sh $cfg2 $pass
-			../zfs_auto_prune-dest.sh $cfg3 $pass
 			
 			do_pause 3
 			
@@ -88,9 +83,12 @@ done
 
 do_logging () { 
 	#create logdir before scripts logging kicks in, so can start tail early & clear logs
+
 	[ ! -d "$log_dir" ] &&	mkdir "$log_dir"
+
 	echo > $log_dir/backup.log
 	echo > $log_dir/send.log
+
 }
 
 do_pause () {
