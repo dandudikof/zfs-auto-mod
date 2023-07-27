@@ -149,76 +149,6 @@ for child in "${dataset_i_array[@]}" ;do
 		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-	local i
-	local mwdh	#just for info
-	local pfix_stype
-	local pfix_sdate
-
-	if [ "$dm" -eq 1 ] ;then
-		i=m
-		mwdh=month
-		pfix_stype="$pfix:stype:2:m"
-		pfix_sdate="$pfix:sdate:$Yn:$my"
-	elif [ "$dw" -eq 1 ] ;then
-		i=w
-		mwdh=week
-		pfix_stype="$pfix:stype:2:w"
-		pfix_sdate="$pfix:sdate:$Yn:$my:$wy"
-	else
-		i=d
-		mwdh=dai
-		pfix_stype="$pfix:stype:2:d"
-		pfix_sdate="$pfix:sdate:$Yn:$my:$wy:$dm"
-	fi
-
-	((snap_num++))
-	
-	local snap_check="$($s_zfs get $pfix_sdate -t snapshot -s local,received -H -o name $src_set)"
-	local current_snap="$src_set@${pfix}-t2-${DATE}_${TIME}-${i}"
-
-		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-		echo "[DEBUG] mwdh = ($mwdh)" 1>&5
-		echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
-		echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
-		echo "[DEBUG] snap_check = ($snap_check)" 1>&5
-		echo "[DEBUG] current_snap = ($current_snap)" 1>&5
-		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-
-	if [ -n "$snap_check" ] ;then
-
-		echo "[info2] ${mwdh}ly snapshot $snap_check allready exists" 1>&4
-
-	else
-
-		echo "[info1] zfs snapshot $current_snap" 1>&3
-		$s_zfs snapshot -o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num $current_snap
-
-	fi
-
-	echo "------------------------------------------------------------------------------------------------" 1>&4
-
-done
-
-}
-
-
-
-do_snap_dataset3() {
-printf "\n--------------------------------------( do_snap_dataset3 )--------------------------------------\n" 1>&4
-		# type3 snap
-
-for child in "${dataset_i_array[@]}" ;do
-
-	local src_set="$child"
-	local last_snap="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
-	local snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
-
-		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-		echo "[DEBUG] src_set = ($src_set)" 1>&5
-		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
-		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
-		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-
 	for i in m w d h ;do
 
 		printf '%55s\n' "--------------------[ $i ]----------------------" 1>&5
@@ -238,10 +168,10 @@ for child in "${dataset_i_array[@]}" ;do
 
 		((snap_num++))
 		
-		local pfix_stype="$pfix:stype:3:$i"
+		local pfix_stype="$pfix:stype:2:$i"
 		local need_snap="$($s_zfs get $pfix:nsnap:$i -s local,received,inherited -H -o value $src_set)"
 		local snap_check="$($s_zfs get $pfix_sdate -t snapshot -s local,received -H -o name $src_set)"
-		local current_snap="$src_set@${pfix}-t3-${DATE}_${TIME}-${i}"
+		local current_snap="$src_set@${pfix}-t2-${DATE}_${TIME}-${i}"
 
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 			echo "[DEBUG] mwdh = ($mwdh)" 1>&5
