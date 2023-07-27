@@ -4,12 +4,12 @@
 #	assigments of logging channels
 # 1 = stdout	= exec		1>		>(stdoutlog)		# [STDOUT]
 # 2 = stderr	= exec		2>		>(sterrlog)			# [STDERR]
-# 3 = info1 	= exec		3>>		$log3				# [INFO1]
-# 4 = info2 	= exec		4>>		$log3				# [INFO2]
+# 3 = info1 	= exec		3>>		$log3				# [info1]
+# 4 = info2 	= exec		4>>		$log3				# [info2]
 # 5 = debug 	= exec		5>>		$log3				# [DEBUG]
-# 6 = send  	= exec		6>>		>(sendlog)			# [SEND-1]
+# 6 = send  	= exec		6>>		>(sendlog)			# [send-1]
 # 7 = send  	= exec		7>>		$log6				# formating for zfs send
-# 8 = recv  	= exec		8>>		>(recvlog)			# [RECV-1]
+# 8 = recv  	= exec		8>>		>(recvlog)			# [recv-1]
 # 9 = recv  	= exec		9>>		$log3				# formating for zfs recv
 
 
@@ -62,18 +62,18 @@ sendlog1 () {
 				#echo "lcount=($lcount) tcount=($tcount)" 1>&5 # for debugging
 
 				if  [ "$tcount" -le 10 ] ;then
-					echo "[SEND-1] $line" >> $log6
+					echo "[send-1] $line" >> $log6
 					lcount=0
 				elif [ "$tcount" -le 100 ] && [ "$lcount" -eq 5 ] ;then
-					echo "[SEND-1] $line" >> $log6
+					echo "[send-1] $line" >> $log6
 					lcount=0
 				elif [ "$tcount" -gt 100 ] && [ "$lcount" -eq 10 ] ;then
-					echo "[SEND-1] $line" >> $log6
+					echo "[send-1] $line" >> $log6
 					lcount=0
 				fi
 
-				[ "$tcount" -eq 10 ] && echo "[SEND-1] print every 5-th line" >> $log6
-				[ "$tcount" -eq 100 ] && echo "[SEND-1] print every 10-th line" >> $log6
+				[ "$tcount" -eq 10 ] && echo "[send-1] print every 5-th line" >> $log6
+				[ "$tcount" -eq 100 ] && echo "[send-1] print every 10-th line" >> $log6
 
 			#minority of send info lines we want to keep
 			else
@@ -82,9 +82,9 @@ sendlog1 () {
 				tcount=0
 
 				if [ -n "$(echo $line | grep ^'send from')" ] ; then
-					echo "[SEND-1] $line " | sed 's! to ! >>>\n[SEND>1] to !g' >> $log6
+					echo "[send-1] $line " | sed 's! to !\n[send-1] to -----> !g' >> $log6
 				else
-					echo "[SEND-1] $line"  >> $log6
+					echo "[send-1] $line"  >> $log6
 				fi
 			fi
 
@@ -112,21 +112,21 @@ sendlog2 () {
 
 				if  [ "$lcount" -eq "$lskip"  ] ;then
 
-					echo "[SEND-2] $line" >> $log6
+					echo "[send-2] $line" >> $log6
 					((count++))
 					lcount=0
 
 						if [ "$count" -ge 5 ] ;then
 							((skip++))
 							count=0
-							echo "[SEND-2] switching to print every $lskip(d-th) line" >> $log6
+							echo "[send-2] switching to print every $lskip(d-th) line" >> $log6
 						fi
 
 				fi
 
 			#minority of send info lines we want to keep
 			else
-				echo "[SEND-2] $line"  >> $log6
+				echo "[send-2] $line"  >> $log6
 				lcount=0
 				skip=1
 			fi
@@ -137,15 +137,17 @@ sendlog2 () {
 
 
 
-#8 adds [RECV-1] to each line and splits up long recv lines in two
+#8 adds [recv-1] to each line and splits up long recv lines in two
 recvlog () {
 
 		while read line ;do
 
-			if [ -n "$(echo $line | grep ^received)" ] ; then
-				echo "[RECV-1] $line" >> $log3
+			if [ -n "$(echo $line | grep "^receiving full")" ] ;then
+				echo "[recv-1] $line" | sed 's! into !\n[recv-1] into ------------------> !g' >> $log3
+			elif [ -n "$(echo $line | grep "^receiving incremental")" ] ;then
+				echo "[recv-1] $line" | sed 's! into !\n[recv-1] into -------------------------> !g' >> $log3
 			else
-				echo "[RECV-1] $line " | sed 's! into ! >>>\n[RECV>1] >>>>>>>   into   !g' >> $log3
+				echo "[recv-1] $line" >> $log3
 			fi
 
 		done
