@@ -35,8 +35,10 @@ for lset in $lsets ; do
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
 		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
+		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
 		
 		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=d
+		[ "$clone" = "-" ] && unset clone
 
 		if [ "$excl" = "1" ] ;then
 
@@ -63,7 +65,10 @@ for lset in $lsets ; do
 
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
-					include_a_array+=([$src_child]=d)
+					[ "$clone" ] || include_a_array+=([$src_child]=d)
+					[ "$clone" ] && include_a_array+=([$src_child]=cl)
+					[ "$clone" ] && clone_i_array+=($src_child)
+					[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
 					dest_a_array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as else-dataset ($src_child)"
 
@@ -112,8 +117,10 @@ for lset in $lsets ; do
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
 		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
+		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
 
 		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=p
+		[ "$clone" = "-" ] && unset clone
 
 		if [ "$excl" = "1" ] ;then
 
@@ -140,7 +147,10 @@ for lset in $lsets ; do
 
 					include_i_array+=($src_child)
 					dataset_i_array+=($src_child)
-					include_a_array+=([$src_child]=d)
+					[ "$clone" ] || include_a_array+=([$src_child]=d)
+					[ "$clone" ] && include_a_array+=([$src_child]=cl)
+					[ "$clone" ] && clone_i_array+=($src_child)
+					[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
 					dest_a_array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as else-dataset ($src_child)"
 
@@ -188,8 +198,11 @@ for lset in $lsets ; do
 
 		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
 		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
+		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
+
 
 		[ "$excl" = 1 ] && unset lret
+		[ "$clone" = "-" ] && unset clone
 
 		case "$lret" in
 
@@ -212,7 +225,10 @@ for lset in $lsets ; do
 			d)
 						include_i_array+=($src_child)
 						dataset_i_array+=($src_child)
-						include_a_array+=([$src_child]=d)
+						[ "$clone" ] || include_a_array+=([$src_child]=d)
+						[ "$clone" ] && include_a_array+=([$src_child]=cl)
+						[ "$clone" ] && clone_i_array+=($src_child)
+						[ "$clone" ] && clone_a_array+=([$src_child]="$clone")
 						dest_a_array+=([$src_child]="$dest_child")
 						#echo "[SORT] classified as dataset ($src_child)"
 			;;
@@ -242,6 +258,7 @@ do_verblist () {
 
 [ "$verb_incl"  = 1 ] && do_print_include_a_array
 [ "$verb_dest"  = 1 ] && do_print_dest_a_array
+[ "$verb_clone" = 1 ] && do_print_clone_a_array
 
 
 }
@@ -263,6 +280,9 @@ printf "\n---------------------------------- do_print_include_i_array ----------
 
 	printf "[LIST1] %20s\n" "dataset_i_array :" 1>&3
 	printf "[LIST1]                      %s\n" "${dataset_i_array[@]}" 1>&3
+
+	printf "[LIST1] %20s\n" "clone_i_array :" 1>&3
+	printf "[LIST1]                      %s\n" "${clone_i_array[@]}" 1>&3
 
 	printf "[LIST1] %20s\n" 'exclude_i_array :' 1>&3
 	printf "[LIST1]                      %s\n" "${exclude_i_array[@]}" 1>&3
@@ -304,6 +324,21 @@ printf "\n---------------------------------- do_print_dest_a_array -------------
 
 }
 
+do_print_clone_a_array () {
+printf "\n---------------------------------- do_print_clone_a_array --------------------------------\n" 1>&3
+	#sleep 0.1 # to sync logging
+
+	printf '[LIST4] %20s\n' "clone_a_array :"  1>&3
+
+	for i in ${!clone_a_array[@]} ;do
+		printf '[LIST4] %20s %s\n' "clone < ="  "$i" 1>&3
+		printf '[LIST4] %20s %s\n' "origin > =" "${clone_a_array[$i]}" 1>&3
+	done
+
+	echo "------------------------------------------------------------------------------------" 1>&3
+
+}
+
 
 
 do_declare_arrays () {
@@ -313,8 +348,10 @@ declare -ag parent_i_array
 declare -ag container_i_array
 declare -ag dataset_i_array
 declare -ag exclude_i_array
+declare -ag clone_i_array
 declare -Ag include_a_array
 declare -Ag dest_a_array
+declare -Ag clone_a_array
 
 }
 
