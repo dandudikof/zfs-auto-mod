@@ -20,7 +20,7 @@ pid_file="$lock_dir/$script/$config_file.pid"
 
 
 do_lock_check() {
-printf "\n---------------------------------- do_lock_check --------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_lock_check )-----------------------------------------\n" 1>&4
 			# tested outside of scripts
 
 
@@ -37,7 +37,7 @@ if [ -f $lock_file ] ;then
 		
 	else
 	
-		echo "[INFO2] lock files exist for $script $config_file but are stale , removing" 1>&4
+		echo "[info2] lock files exist for $script $config_file but are stale , removing" 1>&4
 		rm "$lock_file"
 		rm "$pid_file"
 	
@@ -45,8 +45,8 @@ if [ -f $lock_file ] ;then
 
 fi
 
-echo "[INFO2] creating lock_file for $script $config_file" 1>&4
-echo "[INFO2] creating pid_file for $script $config_file" 1>&4
+echo "[info2] creating lock_file for $script $config_file" 1>&4
+echo "[info2] creating pid_file for $script $config_file" 1>&4
 echo "$config_path" > "$lock_file"
 echo "$pid" > "$pid_file"
 
@@ -57,14 +57,14 @@ return 0
 
 
 do_lock_clear() {
-printf "\n---------------------------------- do_lock_clear --------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_lock_clear )-----------------------------------------\n" 1>&4
 
 
 
 if [ -f $lock_file ] ;then
 	
-		echo "[INFO2] removing lock_file for $script $config" 1>&4
-		echo "[INFO2] removing pid_file for $script $config" 1>&4
+		echo "[info2] removing lock_file for $script $config" 1>&4
+		echo "[info2] removing pid_file for $script $config" 1>&4
 		rm "$lock_file"
 		rm "$pid_file"
 fi

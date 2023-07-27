@@ -7,7 +7,7 @@
 
 
 do_pool_check1() {
-printf "\n---------------------------------- do_pool_check1 --------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_pool_check1 )----------------------------------------\n" 1>&4
 			# tested (once)
 			
 local l_pool
@@ -18,7 +18,7 @@ for l_pool in $s_pool ;do
 
 	if [ "$pool_health" = ONLINE ] ;then
 	
-		echo "[INFO2] SRC ($l_pool) pool state is $pool_health" 1>&4
+		echo "[info2] SRC ($l_pool) pool state is $pool_health" 1>&4
 
 	else 
 
@@ -37,7 +37,7 @@ for l_pool in $d_pool ;do
 
 	if [ "$pool_health" = ONLINE ] ;then
 	
-		echo "[INFO2] DEST ($l_pool) pool state is $pool_health" 1>&4
+		echo "[info2] DEST ($l_pool) pool state is $pool_health" 1>&4
 
 	else 
 
@@ -53,7 +53,7 @@ return 0
 }
 
 do_pool_check2() {
-printf "\n---------------------------------- do_pool_check2 --------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_pool_check2 )----------------------------------------\n" 1>&4
 			# tested (once)
 			
 for i in s d ;do
@@ -70,7 +70,7 @@ for i in s d ;do
 
 	if [ "$pool_health" = ONLINE ] ;then
 	
-		echo "[INFO2] $which (${!l_pool}) pool state is $pool_health" 1>&4
+		echo "[info2] $which (${!l_pool}) pool state is $pool_health" 1>&4
 		continue
 		
 	else 

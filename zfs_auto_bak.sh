@@ -7,11 +7,11 @@ source $1 || { echo "[ERROR] $(basename $0) could NOT load config file" 1>&2; ex
 
 
 printf "\n\n" >> $log_file6			# forward to send long
-echo "[$DATE] [$TIME] ================ BACKUP ================ $1" >> $log_file6
+echo "[$DATE] [$TIME] =============== BACKUP =============== $1" >> $log_file6
 
 printf "\n" >> $log_file3
 echo '================================================================================================' >> $log_file3
-echo "[$DATE] [$TIME] ---------------- BACKUP ---------------- $1" >> $log_file3
+echo "[$DATE] [$TIME] --------------- BACKUP --------------- $1" >> $log_file3
 echo '================================================================================================' >> $log_file3
 
 
@@ -40,7 +40,7 @@ do_everything() {
 
 
 do_backup_sort() {
-#printf "\n---------------------------------- do_backup_sort --------------------------------------\n" 1>&4
+#printf "\n--------------------------------------( do_backup_sort )----------------------------------------\n" 1>&4
 		# walk the include list in order and call apropriate function
 
 [ "$d_path" != "$d_pool" ] && do_backup_container "$d_path"
@@ -78,7 +78,7 @@ done
 
 
 do_backup_container() {
-printf "\n---------------------------------- do_backup_container ----------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_backup_container )-----------------------------------\n" 1>&4
 		# checks for and creates d_path and container sets
 
 local src_set=$1
@@ -86,20 +86,20 @@ local dest_set=${dest_a_array[$1]}
 
 [ "$src_set" = "$d_path" ] && dest_set=$d_path # do not append src_set if src_set is d_path
 
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 	echo "[DEBUG] src_set = ($src_set)" 1>&5
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? = 0 ] ;then
 
-	echo "[INFO2] dest_set $dest_set exists" 1>&4
+	echo "[info2] dest_set $dest_set exists" 1>&4
 
 else
 
-	echo "[INFO2] dest_set $dest_set does NOT exist" 1>&4
-	echo "[INFO1] zfs create $dest_set" 1>&3
+	echo "[info2] dest_set $dest_set does NOT exist" 1>&4
+	echo "[info1] zfs create $dest_set" 1>&3
 
 	local zfs_cmd="$d_zfs create -p -o mountpoint=none $dest_set"
 	echo "[ZFS_CMD] ($zfs_cmd)" 1>&5
@@ -112,23 +112,23 @@ fi
 
 
 do_backup_parent() {
-printf "\n---------------------------------- do_backup_parent --------------------------------\n" 1>&4
-printf "\n---------------------------------- do_backup_parent --------------------------------\n" 1>&7
+printf "\n--------------------------------------( do_backup_parent )--------------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_backup_parent )--------------------------------------\n" 1>&7
 		# checks for and replicates parent sets
 
 
 local src_set="$1"
 local dest_set=${dest_a_array[$1]}
 
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 	echo "[DEBUG] src_set = ($src_set)" 1>&5
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? = 0 ] ;then
 
-	echo "[INFO2] dest set $dest_set exists" 1>&4
+	echo "[info2] dest set $dest_set exists" 1>&4
 	return
 
 fi
@@ -142,8 +142,8 @@ if [ $? != 0 ] ;then
 
 else
 
-	echo "[INFO2] parent set $dest_set does NOT exist" 1>&4
-	echo "[INFO1] zfs send $src_set@$pfix-parent" 1>&3
+	echo "[info2] parent set $dest_set does NOT exist" 1>&4
+	echo "[info1] zfs send $src_set@$pfix-parent" 1>&3
 
 	local zfs_send_cmd="$s_zfs send -pv $src_set@$pfix-parent"
 	local zfs_recv_cmd="$d_zfs recv -Fuv $dest_set"
@@ -151,20 +151,17 @@ else
 	echo "[ZFS_SEND] ($zfs_send_cmd)" 1>&5
 	echo "[ZFS_RECV] ($zfs_recv_cmd)" 1>&5
 
-	echo "------------------------------------------------------------------------------------" 1>&9
+	echo "------------------------------------------------------------------------------------------------" 1>&9
 	 $zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8 
 	local ret=( "${PIPESTATUS[@]}" )
 	sleep 0.1	# to sync logging in this spot, or it jumps order
-	echo "------------------------------------------------------------------------------------" 1>&9
+	echo "------------------------------------------------------------------------------------------------" 1>&9
 
 
 	if [ "${ret[0]}" != 0 ] || [ "${ret[1]}" != 0 ] ;then
 
 		echo "[DEBUG] zfs send pipeline returns are (${ret[@]})" 1>&5
-
-		echo "**************************************************************************************"  1>&3
 		echo "[ERROR] zfs send/recv fail for $src_set " 1>&3
-		echo "**************************************************************************************"  1>&3
 
 	fi
 
@@ -175,22 +172,22 @@ fi
 
 
 do_backup_head() {
-printf "\n---------------------------------- do_backup_head ---------------------------------\n" 1>&4
-printf "\n---------------------------------- do_backup_head ---------------------------------\n" 1>&7
+printf "\n--------------------------------------( do_backup_head )----------------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_backup_head )----------------------------------------\n" 1>&7
 		# checks for and replicates head snaps
 
 local src_set="$1"
 local dest_set=${dest_a_array[$1]}
 
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 	echo "[DEBUG] src_set = ($src_set)" 1>&5
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? = 0 ] ; then
 
-	 echo "[INFO2] dest set $dest_set exist" 1>&4
+	 echo "[info2] dest set $dest_set exist" 1>&4
 
 else
 
@@ -200,13 +197,13 @@ else
 	local orig_set="${clone_a_array["${src_set:-null}"]%@*}"
 	local orig_incl="${include_a_array["${orig_set:-null}"]}"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] head_snap = ($head_snap)" 1>&5
 		echo "[DEBUG] head_snap_num = ($head_snap_num)" 1>&5
 		echo "[DEBUG] orig_snap = ($orig_snap)" 1>&5
 		echo "[DEBUG] orig_set = ($orig_set)" 1>&5
 		echo "[DEBUG] orig_incl = ($orig_incl)" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if [ -z "$head_snap" ] ;then
 
@@ -222,18 +219,20 @@ else
 		echo "[WARNING] >>> to FIX, add origin set to include AND remove/rename clone set on dest to resend" 1>&3
 	fi
 
-	echo "[INFO2] dest set $dest_set does NOT exist" 1>&4
-	echo "[INFO1] zfs send $head_snap" 1>&3
+	echo "[info2] dest set $dest_set does NOT exist" 1>&4
 
 	if [ -n "$orig_snap" ] && [[ "$orig_incl" = d || "$orig_incl" = cl ]] ;then
 
 		echo "[DEBUG] ($src_set) is a clone, and origin is ($orig_snap)" 1>&5
+		echo "[info1] zfs send $orig_snap" 1>&3
+		echo "[info1] to ----> $head_snap" 1>&3
 		local zfs_send_cmd="$s_zfs send -pv -i $orig_snap $head_snap"
 		local zfs_recv_cmd="$d_zfs recv -uv $dest_set"
 
 	else
 
 		echo "[DEBUG] ($src_set) is not a clone, or origin is not on include list" 1>&5
+		echo "[info1] zfs send $head_snap" 1>&3
 		local zfs_send_cmd="$s_zfs send -pv $head_snap"
 		local zfs_recv_cmd="$d_zfs recv -uv $dest_set"
 
@@ -242,19 +241,16 @@ else
 	echo "[ZFS_SEND] ($zfs_send_cmd)" 1>&5
 	echo "[ZFS_RECV] ($zfs_recv_cmd)" 1>&5
 
-	echo "------------------------------------------------------------------------------------" 1>&9
+	echo "------------------------------------------------------------------------------------------------" 1>&9
 	$zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8 
 	local ret=( "${PIPESTATUS[@]}" )
 	sleep 0.1	# to sync logging in this spot, or it jumps order
-	echo "------------------------------------------------------------------------------------" 1>&9
+	echo "------------------------------------------------------------------------------------------------" 1>&9
 
 	if [ "${ret[0]}" != 0 ] || [ "${ret[1]}" != 0 ] ;then
 
 		echo "[DEBUG] zfs send pipeline returns are (${ret[@]})" 1>&5
-
-		echo "**************************************************************************************" 1>&3
 		echo "[ERROR] zfs send/recv fail for $src_set " 1>&3
-		echo "**************************************************************************************" 1>&3
 
 	elif [ "$d_type" = "pri" ] && [ -n "$head_snap_num" ] ;then
 
@@ -271,7 +267,7 @@ fi
 
 
 do_match_snap(){
-printf "\n---------------------------------- do_match_snap ---------------------------------\n" 1>&4
+#printf "\n--------------------------------------( do_match_snap )-----------------------------------------\n" 1>&4
 		# find last matching src and dest snapshots for incr send 
 
 local src_set="$1"
@@ -303,17 +299,17 @@ done
 
 
 do_backup_incr() {
-printf "\n---------------------------------- do_backup_incr --------------------------\n" 1>&4
-printf "\n---------------------------------- do_backup_incr --------------------------\n" 1>&7
+printf "\n--------------------------------------( do_backup_incr )----------------------------------------\n" 1>&4
+printf "\n--------------------------------------( do_backup_incr )----------------------------------------\n" 1>&7
 		# incremental send from last matching dest snap to last source snap
 
 local src_set="$1"
 local dest_set=${dest_a_array[$1]}
 
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 	echo "[DEBUG] src_set = ($src_set)" 1>&5
 	echo "[DEBUG] dest_set = ($dest_set)" 1>&5
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+	#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 $d_zfs list -H -o name $dest_set > /dev/null 2>&1
 if [ $? != 0 ] ; then
@@ -330,14 +326,14 @@ else
 	local last_auto_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
 	local last_trans_snap="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
 
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] match_snap = $match_snap" 1>&5
 		echo "[DEBUG] last_src_snap = $last_src_snap" 1>&5
 		echo "[DEBUG] last_dest_snap = $last_dest_snap" 1>&5
 		echo "[DEBUG] last_auto_snap = $last_auto_snap" 1>&5
 		echo "[DEBUG] last_auto_snap_num = $last_auto_snap_num" 1>&5
 		echo "[DEBUG] last_trans_snap = $last_trans_snap" 1>&5
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	if [ -z "$match_snap" ] ;then
 
@@ -353,14 +349,14 @@ else
 
 	elif [ "$match_snap" = "$last_src_snap" ] ;then
 
-		echo "[INFO2] last snapshot $last_src_snap = match_snap."	1>&4
-		echo "[INFO2] NO need to send $last_src_snap."	1>&4
+		echo "[info2] last snapshot $last_src_snap = match_snap."	1>&4
+		echo "[info2] NO need to send $last_src_snap."	1>&4
 		return 0
 
 	fi
 
-	echo "[INFO1] zfs send $match_snap" 1>&3
-	echo "[INFO1] to ----> $last_src_snap" 1>&3
+	echo "[info1] zfs send $match_snap" 1>&3
+	echo "[info1] to ----> $last_src_snap" 1>&3
 
 	[ "$d_force" = 1 ] && local F=F 
 
@@ -370,19 +366,16 @@ else
 	echo "[ZFS_SEND] ($zfs_send_cmd)" 1>&5
 	echo "[ZFS_RECV] ($zfs_recv_cmd)" 1>&5
 
-	echo "------------------------------------------------------------------------------------" 1>&9
+	echo "------------------------------------------------------------------------------------------------" 1>&9
 	 $zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8 
 	local ret=( "${PIPESTATUS[@]}" )
 	sleep 0.1	# to sync logging in this spot, or it jumps order
-	echo "------------------------------------------------------------------------------------" 1>&9
+	echo "------------------------------------------------------------------------------------------------" 1>&9
 
 	if [ "${ret[0]}" != 0 ] || [ "${ret[1]}" != 0 ]  ;then
 
 		echo "[DEBUG] zfs send pipeline returns are (${ret[@]})" 1>&5
-
-		echo "**************************************************************************************" 1>&3
 		echo "[ERROR] zfs send/recv fail for $src_set " 1>&3
-		echo "**************************************************************************************" 1>&3
 
 	elif [ "$d_type" = pri ] && [ -n "$last_auto_snap_num" ] ;then
 
