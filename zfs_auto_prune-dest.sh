@@ -60,7 +60,7 @@ for child in "${dataset_array[@]}" ;do
 
 	else
 
-		local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
+		local last_dest_snap_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set | tail -n 1)"
 
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 			echo "[DEBUG] last_dest_snap_num = ($last_dest_snap_num)" 1>&5
@@ -73,7 +73,7 @@ for child in "${dataset_array[@]}" ;do
 		else
 
 			local pfix_stype="$pfix:stype:1"
-			local p_list="$($d_zfs get $pfix_stype -t snapshot -s received -H -o name  $dest_set  | head -n -$d_k)"
+			local p_list="$($d_zfs get -t snapshot -s received -H -o name $pfix_stype $dest_set  | head -n -$d_k)"
 			
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 				echo "[DEBUG] d_k = ($d_k)" 1>&5
@@ -88,7 +88,7 @@ for child in "${dataset_array[@]}" ;do
 
 				for p in $p_list ;do
 
-					local p_snap_num="$($d_zfs get $pfix:snum -s received -H -o value $p)"
+					local p_snap_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
 
 					if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
 
@@ -138,7 +138,7 @@ for child in "${dataset_array[@]}" ;do
 
 	else
 
-		local last_dest_snap_num="$($d_zfs get $pfix:snum -t snapshot -s received -H -o value $dest_set | tail -n 1)"
+		local last_dest_snap_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set | tail -n 1)"
 
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 			echo "[DEBUG] last_dest_snap_num = ($last_dest_snap_num)" 1>&5
@@ -163,7 +163,7 @@ for child in "${dataset_array[@]}" ;do
 
 				local ld_k="d_k$i"
 				local pfix_stype="$pfix:stype:2:$i"
-				local p_list="$($d_zfs get $pfix_stype -t snapshot -s received -H -o name $dest_set | head -n -${!ld_k})"
+				local p_list="$($d_zfs get -t snapshot -s received -H -o name $pfix_stype $dest_set | head -n -${!ld_k})"
 				
 					#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 					echo "[DEBUG] mwdh = ($mwdh)" 1>&5
@@ -179,7 +179,7 @@ for child in "${dataset_array[@]}" ;do
 
 					for p in $p_list ;do
 
-						local p_snap_num="$($d_zfs get $pfix:snum -s received -H -o value $p)"
+						local p_snap_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
 
 						if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
 
