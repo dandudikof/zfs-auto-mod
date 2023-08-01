@@ -47,9 +47,9 @@ printf "\n--------------------------------------( do_prune_src1 )---------------
 for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
-	local last_trans_snap="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
-	local last_trans_snap_num="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
-	local last_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
+	local last_trans_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:tsnum $src_set | tail -n 1)"
+	local last_trans_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:tsnum $src_set | tail -n 1)"
+	local last_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
@@ -65,7 +65,7 @@ for child in "${dataset_array[@]}" ;do
 	else
 
 		local pfix_stype="$pfix:stype:1"
-		local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -$s_k)"
+		local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_stype $src_set | head -n -$s_k)"
 		
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 				echo "[DEBUG] s_k = ($s_k)" 1>&5
@@ -80,7 +80,7 @@ for child in "${dataset_array[@]}" ;do
 
 			for p in $p_list ;do
 
-				local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
+				local p_snap_num="$($s_zfs get -s local,received -H -o value $pfix:snum $p)"
 
 				if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
 
@@ -120,9 +120,9 @@ printf "\n--------------------------------------( do_prune_src2 )---------------
 for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
-	local last_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
-	local last_trans_snap="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
-	local last_trans_snap_num="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
+	local last_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
+	local last_trans_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:tsnum $src_set | tail -n 1)"
+	local last_trans_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:tsnum $src_set | tail -n 1)"
 
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
@@ -151,7 +151,7 @@ for child in "${dataset_array[@]}" ;do
 
 			local ls_k="s_k$i"
 			local pfix_stype="$pfix:stype:2:$i"
-			local p_list="$($s_zfs get $pfix_stype -t snapshot -s local,received -H -o name $src_set | head -n -${!ls_k})"
+			local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_stype $src_set | head -n -${!ls_k})"
 			
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 				echo "[DEBUG] mwdh = ($mwdh)" 1>&5
@@ -167,7 +167,7 @@ for child in "${dataset_array[@]}" ;do
 
 				for p in $p_list ;do
 
-					local p_snap_num="$($s_zfs get $pfix:snum -s local,received -H -o value $p)"
+					local p_snap_num="$($s_zfs get -s local,received -H -o value $pfix:snum $p)"
 
 					if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
 
