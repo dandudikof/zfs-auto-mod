@@ -6,7 +6,7 @@
 
 
 
-lock_dir="/run/lock/zfs-auto-mod"
+lock_dir="/var/run/lock/zfs-auto-mod"
 
 pid=$$
 script="$(basename $0)"
