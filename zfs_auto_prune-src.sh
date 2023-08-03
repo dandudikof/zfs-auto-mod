@@ -64,12 +64,12 @@ for child in "${dataset_array[@]}" ;do
 
 	else
 
-		local pfix_stype="$pfix:stype:1"
-		local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_stype $src_set | head -n -$s_k)"
+		local stype="$pfix:stype:1"
+		local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $stype $src_set | tac | sed 1,${s_k}d | tac)"
 		
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 				echo "[DEBUG] s_k = ($s_k)" 1>&5
-				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
+				echo "[DEBUG] stype = ($stype)" 1>&5
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 				
 		if [ -z "$p_list" ] ;then
@@ -150,13 +150,13 @@ for child in "${dataset_array[@]}" ;do
 			[ $i = h ] && mwdh=hour
 
 			local ls_k="s_k$i"
-			local pfix_stype="$pfix:stype:2:$i"
-			local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_stype $src_set | head -n -${!ls_k})"
+			local stype="$pfix:stype:2:$i"
+			local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $stype $src_set | tac | sed 1,${!ls_k}d | tac)"
 			
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 				echo "[DEBUG] mwdh = ($mwdh)" 1>&5
 				echo "[DEBUG] ls_k = (${!ls_k})" 1>&5
-				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
+				echo "[DEBUG] stype = ($stype)" 1>&5
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 			if [ -z "$p_list" ] ;then
