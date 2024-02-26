@@ -80,21 +80,18 @@ printf "\n--------------------------------------( do_snap_dataset1 )------------
 
 for src_set in "${dataset_array[@]}" ;do
 
-	local last_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:snum $src_set | tail -n 1)"
-	local snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
-	local written_size="$($s_zfs get -H -p -o value written $src_set)"
-
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
-		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
-		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
-		echo "[DEBUG] written_size = ($written_size)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
+	local last_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:snum $src_set | tail -n 1)"
+	local snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
+
 	((snap_num++))
-	
+
 	local pfix_stype="$pfix:stype:1"
 	local pfix_sdate="$pfix:sdate:$Yn:$my:$wy:$dm:$hd"
+	local written_size="$($s_zfs get -H -p -o value written $src_set)"
 	local snap_check="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_sdate $src_set)"
 	local minws_check="$($s_zfs get -s local,received,inherited -H -o value $pfix:minws $src_set)"
 	local current_snap="$src_set@${pfix}-t1-${DATE}_${TIME}-n$snap_num"
@@ -102,8 +99,11 @@ for src_set in "${dataset_array[@]}" ;do
 	[ -z "$minws_check" ] && minws_check=0
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
+		echo "[DEBUG] snap_num = ($snap_num)" 1>&5
 		echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 		echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
+		echo "[DEBUG] written_size = ($written_size)" 1>&5
 		echo "[DEBUG] snap_check = ($snap_check)" 1>&5
 		echo "[DEBUG] minws_check = ($minws_check)" 1>&5
 		echo "[DEBUG] current_snap = ($current_snap)" 1>&5
@@ -138,15 +138,8 @@ printf "\n--------------------------------------( do_snap_dataset2 )------------
 
 for src_set in "${dataset_array[@]}" ;do
 
-	local last_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:snum $src_set | tail -n 1)"
-	local snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
-	local written_size="$($s_zfs get -H -p -o value written $src_set)"
-	
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
-		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
-		echo "[DEBUG] last_snap_num = ($snap_num)" 1>&5
-		echo "[DEBUG] written_size = ($written_size)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
 	for i in m w d h ;do
@@ -166,27 +159,34 @@ for src_set in "${dataset_array[@]}" ;do
 		[ $i = d ] && pfix_sdate="$pfix:sdate:$Yn:$my:$wy:$dm"
 		[ $i = h ] && pfix_sdate="$pfix:sdate:$Yn:$my:$wy:$dm:$hd"
 
+		local last_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:snum $src_set | tail -n 1)"
+		local snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
+
 		((snap_num++))
-		
+
 		local pfix_stype="$pfix:stype:2:$i"
+		local written_size="$($s_zfs get -H -p -o value written $src_set)"
 		local need_snap="$($s_zfs get -s local,received,inherited -H -o value $pfix:nsnap:$i $src_set)"
 		local snap_check="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_sdate $src_set)"
 		local minws_check="$($s_zfs get -s local,received,inherited -H -o value $pfix:minws:$i $src_set)"
-		local current_snap="$src_set@${pfix}-t2-${DATE}_${TIME}-${i}"
+		local current_snap="$src_set@${pfix}-t2-${DATE}_${TIME}-${i}-n$snap_num"
 		
 		[ -z "$minws_check" ] && minws_check=0
 		
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 			echo "[DEBUG] mwdh = ($mwdh)" 1>&5
+			echo "[DEBUG] last_snap = ($last_snap)" 1>&5
+			echo "[DEBUG] snap_num = ($snap_num)" 1>&5
 			echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 			echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
+			echo "[DEBUG] written_size = ($written_size)" 1>&5
 			echo "[DEBUG] need_snap = ($need_snap)" 1>&5
 			echo "[DEBUG] snap_check = ($snap_check)" 1>&5
 			echo "[DEBUG] minws_check = ($minws_check)" 1>&5
 			echo "[DEBUG] current_snap = ($current_snap)" 1>&5
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-		if  [ "$need_snap" = 0 ] ;then
+		if [ "$need_snap" = 0 ] ;then
 			
 			echo "[info2] ${mwdh} snapshot $src_set disabled" 1>&4
 
