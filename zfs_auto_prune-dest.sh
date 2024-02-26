@@ -51,63 +51,55 @@ printf "\n--------------------------------------( do_prune_dest1 )--------------
 for src_set in "${dataset_array[@]}" ;do
 
 	local dest_set="${dest_Array[$src_set]}"
-	
+	local last_dest_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set 2>/dev/null | tail -n 1)"
+
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] dest_set = ($dest_set)" 1>&5
+		echo "[DEBUG] last_dest_num = ($last_dest_num)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-		
-	$d_zfs list -H -o name $dest_set > /dev/null 2>&1
-	if [ $? != 0 ] ;then
 
-		echo "[info2] dest_set $dest_set does NOT exists, skipping prune" 1>&4		
+	if ! $d_zfs list -H -o name $dest_set > /dev/null 2>&1 ;then
+
+		echo "[info2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
+
+	elif [ -z $last_dest_num ] ;then
+
+		echo "[info2] dest set $dest_set has NO auto snapshots, skipping prune" 1>&4
 
 	else
 
-		local last_dest_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set | tail -n 1)"
+		local pfix_stype="$pfix:stype:1"
 
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-			echo "[DEBUG] last_dest_num = ($last_dest_num)" 1>&5
+			echo "[DEBUG] d_k = ($d_k)" 1>&5
+			echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-			
-		if [ -z $last_dest_num  ] ;then
 
-			echo "[info2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
+		local p_list="$($d_zfs get -t snapshot -s received -H -o name $pfix_stype $dest_set | head -n -$d_k)"
+
+		if [ -z "$p_list" ] ;then
+
+			echo "[info2] nothing to prune in $dest_set" 1>&4
 
 		else
 
-			local pfix_stype="$pfix:stype:1"
-			local p_list="$($d_zfs get -t snapshot -s received -H -o name $pfix_stype $dest_set  | head -n -$d_k)"
-			
-				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-				echo "[DEBUG] d_k = ($d_k)" 1>&5
-				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
-				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-		
-			if [ -z "$p_list" ] ;then
+			for p in $p_list ;do
 
-				echo "[info2] nothing to prune in $dest_set" 1>&4
+				local p_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
 
-			else
+				if [ "$p_num" -lt "$last_dest_num" ] ;then
 
-				for p in $p_list ;do
+					echo "[info1] zfs destroy $p" 1>&3
+					$d_zfs destroy $p
 
-					local p_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
+				else
 
-					if [ "$p_num" -lt "$last_dest_num" ]  ;then
+					echo "[info2] NOT ok to destroy $p" 1>&4
 
-						echo "[info1] zfs destroy $p" 1>&3
-						$d_zfs destroy $p
+				fi
 
-					else
-
-						echo "[info2] NOT ok to destroy $p"  1>&4
-
-					fi
-
-				done
-				
-			fi
+			done
 
 		fi
 
@@ -128,80 +120,72 @@ printf "\n--------------------------------------( do_prune_dest2 )--------------
 for src_set in "${dataset_array[@]}" ;do
 
 	local dest_set="${dest_Array[$src_set]}"
-	
+	local last_dest_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set 2>/dev/null | tail -n 1)"
+
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
 		echo "[DEBUG] dest_set = ($dest_set)" 1>&5
+		echo "[DEBUG] last_dest_num = ($last_dest_num)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-		
-	$d_zfs list -H -o name $dest_set > /dev/null 2>&1
-	if [ $? != 0 ] ;then
+
+	if ! $d_zfs list -H -o name $dest_set > /dev/null 2>&1 ;then
 
 		echo "[info2] dest_set $dest_set does NOT exists, skipping prune" 1>&4
 
+	elif [ -z $last_dest_num ] ;then
+
+		echo "[info2] dest set $dest_set has NO auto snapshots, skipping prune" 1>&4
+
 	else
 
-		local last_dest_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set | tail -n 1)"
-
-			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-			echo "[DEBUG] last_dest_num = ($last_dest_num)" 1>&5
-			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-
-		if  [ -z $last_dest_num  ] ;then
-
-			echo "[info2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
-
-		else
-
-			for i in m w d h ;do
+		for i in m w d h ;do
+		
+			printf '%55s\n' "--------------------[ $i ]----------------------" 1>&5
 			
-				printf '%55s\n' "--------------------[ $i ]----------------------" 1>&5
-				
-				# just for info
-				local mwdh
-				[ $i = m ] && mwdh=monthly
-				[ $i = w ] && mwdh=weekly
-				[ $i = d ] && mwdh=daily
-				[ $i = h ] && mwdh=hourly
+			# just for info
+			local mwdh
+			[ $i = m ] && mwdh=monthly
+			[ $i = w ] && mwdh=weekly
+			[ $i = d ] && mwdh=daily
+			[ $i = h ] && mwdh=hourly
 
-				local ld_k="d_k$i"
-				local pfix_stype="$pfix:stype:2:$i"
-				local p_list="$($d_zfs get -t snapshot -s received -H -o name $pfix_stype $dest_set | head -n -${!ld_k})"
-				
-					#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-					echo "[DEBUG] mwdh = ($mwdh)" 1>&5
-					echo "[DEBUG] ld_k = (${!ld_k})" 1>&5
-					echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
-					#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+			local ld_k="d_k$i"
+			local pfix_stype="$pfix:stype:2:$i"
 
-				if [ -z "$p_list" ] ;then
-				
-					echo "[info2] nothing to prune for ${mwdh} in $dest_set" 1>&4
-					
-				else
+				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+				echo "[DEBUG] mwdh = ($mwdh)" 1>&5
+				echo "[DEBUG] ld_k = (${!ld_k})" 1>&5
+				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
+				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-					for p in $p_list ;do
+			local p_list="$($d_zfs get -t snapshot -s received -H -o name $pfix_stype $dest_set | head -n -${!ld_k})"
 
-						local p_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
+			if [ -z "$p_list" ] ;then
 
-						if [ "$p_num" -lt "$last_dest_num" ]  ;then
+				echo "[info2] nothing to prune for ${mwdh} in $dest_set" 1>&4
 
-							echo "[info1] zfs destroy $p" 1>&3
-							$d_zfs destroy $p
+			else
 
-						else
-						
-							echo "[info2] NOT ok to destroy $p"  1>&4
-							
-						fi
+				for p in $p_list ;do
 
-					done
+					local p_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
 
-				fi
+					if [ "$p_num" -lt "$last_dest_num" ] ;then
 
-			done
+						echo "[info1] zfs destroy $p" 1>&3
+						$d_zfs destroy $p
 
-		fi
+					else
+
+						echo "[info2] NOT ok to destroy $p" 1>&4
+
+					fi
+
+				done
+
+			fi
+
+		done
 
 	fi
 

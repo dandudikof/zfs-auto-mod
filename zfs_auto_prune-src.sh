@@ -50,29 +50,30 @@ printf "\n--------------------------------------( do_prune_src1 )---------------
 
 for src_set in "${dataset_array[@]}" ;do
 
-	local last_trans_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:tsnum $src_set | tail -n 1)"
 	local last_src_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
+	local last_trans_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:tsnum $src_set | tail -n 1)"
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
-		echo "[DEBUG] last_trans_num = ($last_trans_num)" 1>&5
 		echo "[DEBUG] last_src_num = ($last_src_num)" 1>&5
+		echo "[DEBUG] last_trans_num = ($last_trans_num)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-	if [ -z $last_trans_num  ] && [ "$s_type" = sbp ] ;then
+	if [ -z $last_trans_num ] && [ "$s_type" = sbp ] ;then
 
 		echo "[info2] src_set $src_set has NOT been transfered yet , skipping prune" 1>&4
 
 	else
 
 		local pfix_stype="$pfix:stype:1"
-		local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_stype $src_set | head -n -$s_k)"
-		
+
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 				echo "[DEBUG] s_k = ($s_k)" 1>&5
 				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-				
+
+		local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_stype $src_set | head -n -$s_k)"
+
 		if [ -z "$p_list" ] ;then
 		
 			echo "[info2] nothing to prune in $src_set" 1>&4
@@ -95,7 +96,7 @@ for src_set in "${dataset_array[@]}" ;do
 
 				else
 
-					echo "[info2] NOT ok to destroy $p"  1>&4
+					echo "[info2] NOT ok to destroy $p" 1>&4
 
 				fi
 
@@ -128,7 +129,7 @@ for src_set in "${dataset_array[@]}" ;do
 		echo "[DEBUG] last_trans_num = ($last_trans_num)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-	if  [ -z $last_trans_num ] && [ "$s_type" = sbp ] ;then
+	if [ -z $last_trans_num ] && [ "$s_type" = sbp ] ;then
 
 		echo "[info2] src_set $src_set has NOT been transfered yet , skipping prune" 1>&4
 
@@ -147,13 +148,14 @@ for src_set in "${dataset_array[@]}" ;do
 
 			local ls_k="s_k$i"
 			local pfix_stype="$pfix:stype:2:$i"
-			local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_stype $src_set | head -n -${!ls_k})"
-			
+
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 				echo "[DEBUG] mwdh = ($mwdh)" 1>&5
 				echo "[DEBUG] ls_k = (${!ls_k})" 1>&5
 				echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 				#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
+
+			local p_list="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_stype $src_set | head -n -${!ls_k})"
 
 			if [ -z "$p_list" ] ;then
 
@@ -177,7 +179,8 @@ for src_set in "${dataset_array[@]}" ;do
 
 					else
 
-						echo "[info2] NOT ok to destroy $p"  1>&4
+						echo "[info2] NOT ok to destroy $p" 1>&4
+
 					fi
 
 				done
@@ -201,6 +204,7 @@ do_everything
 
 
 exit
+
 
 
 
