@@ -46,19 +46,19 @@ do_backup_sort() {
 
 [ "$d_path" != "$d_pool" ] && do_backup_container "$d_path"
 
-for i in "${include_array[@]}" ;do
+for i_set in "${include_array[@]}" ;do
 
-	case "${include_Array[$i]}" in
+	case "${include_Array[$i_set]}" in
 	
 		c)
-			do_backup_container "$i" ;;
+			do_backup_container "$i_set" ;;
 
 		p)
-			do_backup_parent "$i" ;;
+			do_backup_parent "$i_set" ;;
 
 		d)
-			do_backup_head "$i"
-			do_backup_incr "$i" ;;
+			do_backup_head "$i_set"
+			do_backup_incr "$i_set" ;;
 
 		*)
 			continue ;;
@@ -67,10 +67,10 @@ for i in "${include_array[@]}" ;do
 
 done
 
-for i in "${clone_array[@]}" ;do
+for c_set in "${clone_array[@]}" ;do
 
-	do_backup_head "$i"
-	do_backup_incr "$i"
+	do_backup_head "$c_set"
+	do_backup_incr "$c_set"
 
 done
 

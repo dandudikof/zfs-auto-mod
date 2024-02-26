@@ -44,9 +44,8 @@ do_snap_parent() {
 printf "\n--------------------------------------( do_snap_parent )----------------------------------------\n" 1>&4
 			# snaps s_pool and parent datasets to set@$pfix-parent
 
-for child in "${parent_array[@]}" ;do
+for src_set in "${parent_array[@]}" ;do
 
-	local src_set=$child
 	local parent_check="$($s_zfs list -H -o name $src_set@$pfix-parent 2> /dev/null)"
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
@@ -79,9 +78,8 @@ do_snap_dataset1() {
 printf "\n--------------------------------------( do_snap_dataset1 )--------------------------------------\n" 1>&4
 		# type1 snap
 
-for child in "${dataset_array[@]}" ;do
+for src_set in "${dataset_array[@]}" ;do
 
-	local src_set="$child"
 	local last_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:snum $src_set | tail -n 1)"
 	local snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
 	local written_size="$($s_zfs get -H -p -o value written $src_set)"
@@ -138,9 +136,8 @@ do_snap_dataset2() {
 printf "\n--------------------------------------( do_snap_dataset2 )--------------------------------------\n" 1>&4
 		# type2 snap
 
-for child in "${dataset_array[@]}" ;do
+for src_set in "${dataset_array[@]}" ;do
 
-	local src_set="$child"
 	local last_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:snum $src_set | tail -n 1)"
 	local snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
 	local written_size="$($s_zfs get -H -p -o value written $src_set)"
