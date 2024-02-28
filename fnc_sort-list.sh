@@ -1,10 +1,10 @@
 
 
 
-do_sort_list1() {
+do_sort_list() {
 
-printf "\n--------------------------------------( do_sort_list1 )-----------------------------------------\n" 1>&5
-		# auto dataset sort (uncludes all under s_pool,s_sets and parent,container,dataset unless excluded)
+printf "\n--------------------------------------( do_sort_list )------------------------------------------\n" 1>&5
+		# dataset sort 
 
 do_declare_arrays
 
@@ -32,20 +32,19 @@ for lset in $lsets ; do
 		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
 		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
-		local lret="$($s_zfs get -s local,received -H -o value $pfix:incl $src_child)"
-		local iret="$($s_zfs get -s inherited -H -o value $pfix:incl $src_child)"
+		local incl="$($s_zfs get -s local,received -H -o value $pfix:incl $src_child)"
 		local excl="$($s_zfs get -s local,inherited,received -H -o value $pfix:excl $src_child)"
-		local clone="$($s_zfs get -t filesystem,volume -H -o value origin $src_child)"
+		local orig="$($s_zfs get -t filesystem,volume -H -o value origin $src_child)"
 		
-		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=$set_type
-		[ "$clone" = "-" ] && unset clone
+		[ "$src_child" = "$lset" ] && [ -z "$incl" ] && incl=$set_type
+		[ "$set_recurse" = 0 ] && [ -z "$incl" ] && excl=1
 
 		if [ "$excl" = "1" ] ;then
 
 					exclude_array+=($src_child)
 					#echo "[SORT] classified as excluded ($src_child)"
-		
-		elif [ "$lret" = "p" ] ;then
+
+		elif [ "$incl" = "p" ] ;then
 
 					include_array+=($src_child)
 					parent_array+=($src_child)
@@ -53,7 +52,7 @@ for lset in $lsets ; do
 					dest_Array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as parent ($src_child)"
 
-		elif [ "$lret" = "c" ] ;then
+		elif [ "$incl" = "c" ] ;then
 
 					include_array+=($src_child)
 					container_array+=($src_child)
@@ -65,101 +64,14 @@ for lset in $lsets ; do
 
 					include_array+=($src_child)
 					dataset_array+=($src_child)
-					[ "$clone" ] || include_Array+=([$src_child]=d)
-					[ "$clone" ] && include_Array+=([$src_child]=cl)
-					[ "$clone" ] && temp_clone_array+=($src_child)
-					[ "$clone" ] && temp_clone_Array+=([$src_child]="$clone")
+					[ "$orig" = "-" ] && include_Array+=([$src_child]=d)
+					[ "$orig" = "-" ] || include_Array+=([$src_child]=cl)
+					[ "$orig" = "-" ] || temp_clone_array+=($src_child)
+					[ "$orig" = "-" ] || temp_clone_Array+=([$src_child]="$orig")
 					dest_Array+=([$src_child]="$dest_child")
 					#echo "[SORT] classified as else-dataset ($src_child)"
 
 		fi
-
-	done
-
-done
-
-do_clone_array_sort
-
-do_verblist
-
-}
-
-
-
-do_sort_list2() {
-printf "\n--------------------------------------( do_sort_list2 )-----------------------------------------\n" 1>&5
-		# manual sort (must set every parent,container,dataset otherwise exclude)
-
-do_declare_arrays
-
-if [ -z "$s_sets" ] ;then
-	lsets="$s_pool"
-else
-	for set in $s_sets ;do		#(!double quoting expands as single word)
-		lsets+="$s_pool/$set "
-		#lsets="$lsets $s_pool/$set"
-	done
-fi
-
-include_array+=($s_pool)
-parent_array+=($s_pool)
-include_Array+=([$s_pool]=p)
-
-[ "$strip_pool"  = 1 ] && dest_Array+=([$s_pool]="$d_path")
-[ "$strip_pool" != 1 ] && dest_Array+=([$s_pool]="$d_path/$s_pool")
-
-for lset in $lsets ; do
-	for src_child in $($s_zfs list -Hr -o name $lset) ;do
-
-		[ "$src_child" = "$s_pool" ] && continue
-
-		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
-		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
-
-		local lret="$($s_zfs get -s local,received -H -o value $pfix:incl $src_child)"
-		local excl="$($s_zfs get -s local,inherited,received -H -o value $pfix:excl $src_child)"
-		local clone="$($s_zfs get -t filesystem,volume -H -o value origin $src_child)"
-
-		[ "$excl" = 1 ] && unset lret
-		[ "$clone" = "-" ] && unset clone
-
-		case "$lret" in
-
-			p)
-						include_array+=($src_child)
-						parent_array+=($src_child)
-						include_Array+=([$src_child]=p)
-						dest_Array+=([$src_child]="$dest_child")
-						#echo "[SORT] classified as parent ($src_child)"
-			;;
-
-			c)
-						include_array+=($src_child)
-						container_array+=($src_child)
-						include_Array+=([$src_child]=c)
-						dest_Array+=([$src_child]="$dest_child")
-						#echo "[SORT] classified as container ($src_child)"
-			;;
-
-			d)
-						include_array+=($src_child)
-						dataset_array+=($src_child)
-						[ "$clone" ] || include_Array+=([$src_child]=d)
-						[ "$clone" ] && include_Array+=([$src_child]=cl)
-						[ "$clone" ] && temp_clone_array+=($src_child)
-						[ "$clone" ] && temp_clone_Array+=([$src_child]="$clone")
-						dest_Array+=([$src_child]="$dest_child")
-						#echo "[SORT] classified as dataset ($src_child)"
-			;;
-
-			*)
-						exclude_array+=($src_child)
-						#echo "[SORT] classified as else ($src_child)"
-			;;
-
-
-
-		esac
 
 	done
 
