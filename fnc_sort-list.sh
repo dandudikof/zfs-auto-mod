@@ -32,10 +32,10 @@ for lset in $lsets ; do
 		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
 		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
-		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
-		local iret="$($s_zfs get $pfix:incl -s inherited -H -o value $src_child)"
-		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
-		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
+		local lret="$($s_zfs get -s local,received -H -o value $pfix:incl $src_child)"
+		local iret="$($s_zfs get -s inherited -H -o value $pfix:incl $src_child)"
+		local excl="$($s_zfs get -s local,inherited,received -H -o value $pfix:excl $src_child)"
+		local clone="$($s_zfs get -t filesystem,volume -H -o value origin $src_child)"
 		
 		[ "$src_child" = "$lset" ] && [ -z "$lret" ] && lret=$set_type
 		[ "$clone" = "-" ] && unset clone
@@ -116,9 +116,9 @@ for lset in $lsets ; do
 		[ "$strip_pool"  = 1 ] && dest_child="$d_path/${src_child#${s_pool}/}"
 		[ "$strip_pool" != 1 ] && dest_child="$d_path/$src_child"
 
-		local lret="$($s_zfs get $pfix:incl -s local,received -H -o value $src_child)"
-		local excl="$($s_zfs get $pfix:excl -s local,inherited,received -H -o value $src_child)"
-		local clone="$($s_zfs get origin -t filesystem,volume -H -o value $src_child)"
+		local lret="$($s_zfs get -s local,received -H -o value $pfix:incl $src_child)"
+		local excl="$($s_zfs get -s local,inherited,received -H -o value $pfix:excl $src_child)"
+		local clone="$($s_zfs get -t filesystem,volume -H -o value origin $src_child)"
 
 		[ "$excl" = 1 ] && unset lret
 		[ "$clone" = "-" ] && unset clone

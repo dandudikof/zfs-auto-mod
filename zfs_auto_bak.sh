@@ -15,6 +15,7 @@ echo "[$DATE] [$TIME] --------------- BACKUP --------------- $1" >> $log_file3
 echo '================================================================================================' >> $log_file3
 
 
+source $script_dir/fnc_compatibility.sh || { echo '[ERROR] NOT loaded (fnc_compatibility.sh) ' >> $log_file3; fnc_err=1; }
 source $script_dir/fnc_lock-check.sh || { echo '[ERROR] NOT loaded (fnc_lock-check.sh) ' >> $log_file3; fnc_err=1; }
 source $script_dir/fnc_remote-check.sh || { echo '[ERROR] NOT loaded (fnc_remote-check.sh)' >> $log_file3; fnc_err=1; }
 source $script_dir/fnc_pool-check.sh || { echo '[ERROR] NOT loaded (fnc_pool-check.sh)' >> $log_file3; fnc_err=1; }
@@ -190,7 +191,7 @@ elif ! $d_zfs list -H -o name ${dest_set%/*} > /dev/null 2>&1 ;then
 else
 
 	local head_snap="$($s_zfs list -t snapshot -H -o name $src_set | head -1)"
-	local head_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $head_snap)"
+	local head_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $head_snap)"
 	local orig_snap="${clone_Array["${src_set:-null}"]}"
 	local orig_set="${clone_Array["${src_set:-null}"]%@*}"
 	local orig_incl="${include_Array["${orig_set:-null}"]}"
@@ -275,8 +276,8 @@ for src_snap in $($s_zfs list -t snapshot -H -o name $src_set | tac ) ;do
 
 	if $d_zfs list -t snapshot -H -o name $dest_set@$snap > /dev/null 2>&1 ;then
 
-		local s_guid="$($s_zfs get guid -t snapshot -H -o value $src_snap)"
-		local d_guid="$($d_zfs get guid -t snapshot -H -o value $dest_set@$snap)"
+		local s_guid="$($s_zfs get -t snapshot -H -o value guid $src_snap)"
+		local d_guid="$($d_zfs get -t snapshot -H -o value guid $dest_set@$snap)"
 
 		if [ "$s_guid" = "$d_guid" ] ;then
 
@@ -316,9 +317,9 @@ else
 	local match_snap="$(do_match_snap $src_set)"
 	local last_src_snap="$($s_zfs list -t snapshot -H -o name $src_set | tail -n 1)"
 	local last_dest_snap="$($d_zfs list -t snapshot -H -o name $dest_set | tail -n 1)"
-	local last_auto_snap="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
-	local last_auto_snap_num="$($s_zfs get $pfix:snum -t snapshot -s local,received -H -o value $src_set | tail -n 1)"
-	local last_trans_snap="$($s_zfs get $pfix:tsnum -t snapshot -s local,received -H -o name $src_set | tail -n 1)"
+	local last_auto_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:snum $src_set | tail -n 1)"
+	local last_auto_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
+	local last_trans_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:tsnum $src_set | tail -n 1)"
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] match_snap = $match_snap" 1>&5
