@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+v=1.01
 
 [ -z $1 ] && { echo "[ERROR] $(basename $0) NO config file provided" 1>&2; exit 1; }
 source $1 || { echo "[ERROR] $(basename $0) could NOT load config file" 1>&2; exit 1; }
@@ -15,7 +15,7 @@ source $1 || { echo "[ERROR] $(basename $0) could NOT load config file" 1>&2; ex
 
 printf "\n" >> $log_file3
 echo '================================================================================================' >> $log_file3
-echo "[$DATE] [$TIME] --------------- SNAP --------------- $1" >> $log_file3
+echo "[$DATE] [$TIME] ---------- $(basename $0) v$v ---------- $1" >> $log_file3
 echo '================================================================================================' >> $log_file3
 
 
@@ -67,7 +67,8 @@ for src_set in "${parent_array[@]}" ;do
 		echo "[info1] zfs snapshot $src_set@$pfix-parent" 1>&3
 
 		local snap_opts1="-o $pfix:stype:p="
-		local snap_cmd="snapshot $snap_opts1 $src_set@$pfix-parent"
+		local snap_opts2="-o zfs-auto-mod:v=$v"
+		local snap_cmd="snapshot $snap_opts1 $snap_opts2 $src_set@$pfix-parent"
 
 		echo "[SNAP_CMD] ($snap_cmd)" 1>&5
 
@@ -131,7 +132,8 @@ for src_set in "${dataset_array[@]}" ;do
 		echo "[info1] zfs snapshot $current_snap" 1>&3
 
 		local snap_opts1="-o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num"
-		local snap_cmd="snapshot $snap_opts1 $current_snap"
+		local snap_opts2="-o zfs-auto-mod:v=$v"
+		local snap_cmd="snapshot $snap_opts1 $snap_opts2 $current_snap"
 
 		echo "[SNAP_CMD] ($snap_cmd)" 1>&5
 
@@ -218,7 +220,8 @@ for src_set in "${dataset_array[@]}" ;do
 			echo "[info1] zfs snapshot $current_snap" 1>&3
 
 			local snap_opts1="-o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num"
-			local snap_cmd="snapshot $snap_opts1 $current_snap"
+			local snap_opts2="-o zfs-auto-mod:v=$v"
+			local snap_cmd="snapshot $snap_opts1 $snap_opts2 $current_snap"
 
 			echo "[SNAP_CMD] ($snap_cmd)" 1>&5
 

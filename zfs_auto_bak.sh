@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+v=1.01
 
 [ -z $1 ] && { echo "[ERROR] $(basename $0) NO config file provided" 1>&2; exit 1; }
 source $1 || { echo "[ERROR] $(basename $0) could NOT load config file" 1>&2; exit 1; }
@@ -11,11 +11,11 @@ source $1 || { echo "[ERROR] $(basename $0) could NOT load config file" 1>&2; ex
 
 
 printf "\n\n" >> $log_file6			# forward to send long
-echo "[$DATE] [$TIME] =============== BACKUP =============== $1" >> $log_file6
+echo "[$DATE] [$TIME] ========== $(basename $0) v$v ========== $1" >> $log_file6
 
 printf "\n" >> $log_file3
 echo '================================================================================================' >> $log_file3
-echo "[$DATE] [$TIME] --------------- BACKUP --------------- $1" >> $log_file3
+echo "[$DATE] [$TIME] ---------- $(basename $0) v$v ---------- $1" >> $log_file3
 echo '================================================================================================' >> $log_file3
 
 
