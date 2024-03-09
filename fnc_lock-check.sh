@@ -18,8 +18,8 @@ do_lock_check() {
 printf "\n--------------------------------------( do_lock_check )-----------------------------------------\n" 1>&4
 		# lock files creation and lock checks
 
-[ ! -d "$lock_dir" ] && mkdir "$lock_dir"
-[ ! -d "$lock_dir/$script" ] && mkdir "$lock_dir/$script"
+[ -d "$lock_dir" ] || mkdir -p "$lock_dir"
+[ -d "$lock_dir/$script" ] || mkdir "$lock_dir/$script"
 
 if [ -f $lock_file ] ;then
 	
@@ -42,7 +42,7 @@ if [ -f $lock_file ] ;then
 
 fi
 
-if [ -d "$lock_dir/$script" ] ;then
+if [ -w "$lock_dir/$script" ] ;then
 
 	echo "[info2] creating lock_file for $script $config_file" 1>&4
 	echo "[info2] creating pid_file for $script $config_file" 1>&4

@@ -5,6 +5,10 @@
 [ -z $1 ] && { echo "[ERROR] $(basename $0) NO config file provided" 1>&2; exit 1; }
 source $1 || { echo "[ERROR] $(basename $0) could NOT load config file" 1>&2; exit 1; }
 
+[ -d "$log_dir" ] || mkdir -p "$log_dir" || { echo "[ERROR] $(basename $0) Unable to create $log_dir" 1>&2; exit 1; }
+[ -w "$log_file3" ] || touch "$log_file3" || { echo "[ERROR] $(basename $0) Unable to create $log_file3" 1>&2; exit 1; }
+
+
 
 
 

@@ -16,12 +16,6 @@
 log3="$log_file3"
 log6="$log_file6"
 
-[ ! -d "$log_dir" ] && mkdir -p "$log_dir"
-[ ! -f "$log3" ] &&	touch "$log3"
-[ ! -f "$log6" ] &&	touch "$log6"
-
-
-
 
 #1
 stdoutlog () {
