@@ -13,14 +13,14 @@
 
 # (can edit/debug rest of script/configs while running and tailing logs, except this file)
 
-echo run > /tmp/auto-pause	# change to pause to enable paused state on start
+echo pause > /tmp/auto-pause	# change to pause to enable paused state on start
 
 echo -e "\n-------------------------------- $(date +%T) --------------------------------\n"
 
 cfg1=../config/type1.cfg
 cfg2=../config/type2.cfg
 
-log_dir=/ramdisk/auto
+log_dir=/ramdisk/log
 
 YN=2025		# year
 wy=0		# week of year
@@ -84,7 +84,7 @@ done
 do_logging () { 
 	#create logdir before scripts logging kicks in, so can start tail early & clear logs
 
-	[ ! -d "$log_dir" ] &&	mkdir "$log_dir"
+	[ -d "$log_dir" ] || mkdir "$log_dir"
 
 	echo > $log_dir/backup.log
 	echo > $log_dir/send.log
@@ -103,17 +103,17 @@ do_pause () {
 		local cat="$(cat /tmp/auto-pause)"
 				
 		if [ "$call" = 1 ] ;then
-			[ "$cat" = step1 ] && { printf "\033[0K\r"; echo "pause" > /tmp/auto-pause; return; }
+			[ "$cat" = step1 ] && { printf "\033[0K\r"; echo pause > /tmp/auto-pause; return; }
 			[ "$cat" = step2 ] && { printf "\033[0K\r"; return; }
 			[ "$cat" = step3 ] && { printf "\033[0K\r"; return; }
 		elif [ "$call" = 2 ] ;then
 			[ "$cat" = step1 ] && { printf "\033[0K\r"; return; }
-			[ "$cat" = step2 ] && { printf "\033[0K\r"; echo "pause" > /tmp/auto-pause; return; }
+			[ "$cat" = step2 ] && { printf "\033[0K\r"; echo pause > /tmp/auto-pause; return; }
 			[ "$cat" = step3 ] && { printf "\033[0K\r"; return; }
 		elif [ "$call" = 3 ] ;then		
 			[ "$cat" = step1 ] && { printf "\033[0K\r"; return; }
 			[ "$cat" = step2 ] && { printf "\033[0K\r"; return; }
-			[ "$cat" = step3 ] && { printf "\033[0K\r"; echo "pause" > /tmp/auto-pause; return; }
+			[ "$cat" = step3 ] && { printf "\033[0K\r"; echo pause > /tmp/auto-pause; return; }
 		else 
 			return
 		fi
