@@ -47,18 +47,16 @@ printf "\n--------------------------------------( do_prune_src1 )---------------
 for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
-	local last_trans_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:tsnum $src_set | tail -n 1)"
-	local last_trans_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:tsnum $src_set | tail -n 1)"
-	local last_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
+	local last_trans_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:tsnum $src_set | tail -n 1)"
+	local last_src_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
-		echo "[DEBUG] last_trans_snap = ($last_trans_snap)" 1>&5
-		echo "[DEBUG] last_trans_snap_num  = ($last_trans_snap_num)" 1>&5
-		echo "[DEBUG] last_snap_num = ($last_snap_num)" 1>&5
+		echo "[DEBUG] last_trans_num = ($last_trans_num)" 1>&5
+		echo "[DEBUG] last_src_num = ($last_src_num)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-	if [ -z $last_trans_snap_num  ] && [ "$s_type" = sbp ] ;then
+	if [ -z $last_trans_num  ] && [ "$s_type" = sbp ] ;then
 
 		echo "[info2] src_set $src_set has NOT been transfered yet , skipping prune" 1>&4
 
@@ -80,14 +78,14 @@ for child in "${dataset_array[@]}" ;do
 
 			for p in $p_list ;do
 
-				local p_snap_num="$($s_zfs get -s local,received -H -o value $pfix:snum $p)"
+				local p_num="$($s_zfs get -s local,received -H -o value $pfix:snum $p)"
 
-				if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
+				if [ "$p_num" -lt "$last_trans_num" ] && [ "$s_type" = sbp ] ;then
 
 					echo "[info1] zfs destroy $p" 1>&3
 					$s_zfs destroy $p
 
-				elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
+				elif [ "$p_num" -lt "$last_src_num" ] && [ "$s_type" = sp ] ;then
 
 					echo "[info1] zfs destroy $p" 1>&3
 					$s_zfs destroy $p
@@ -119,19 +117,16 @@ printf "\n--------------------------------------( do_prune_src2 )---------------
 for child in "${dataset_array[@]}" ;do
 
 	local src_set="$child"
-	local last_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
-	local last_trans_snap="$($s_zfs get -t snapshot -s local,received -H -o name $pfix:tsnum $src_set | tail -n 1)"
-	local last_trans_snap_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:tsnum $src_set | tail -n 1)"
-
+	local last_src_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:snum $src_set | tail -n 1)"
+	local last_trans_num="$($s_zfs get -t snapshot -s local,received -H -o value $pfix:tsnum $src_set | tail -n 1)"
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] src_set = ($src_set)" 1>&5
-		echo "[DEBUG] last_snap_num = ($last_snap_num)" 1>&5
-		echo "[DEBUG] last_trans_snap = ($last_trans_snap)" 1>&5
-		echo "[DEBUG] last_trans_snap_num = ($last_trans_snap_num)" 1>&5
+		echo "[DEBUG] last_src_num = ($last_src_num)" 1>&5
+		echo "[DEBUG] last_trans_num = ($last_trans_num)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-	if  [ -z $last_trans_snap_num ] && [ "$s_type" = sbp ] ;then
+	if  [ -z $last_trans_num ] && [ "$s_type" = sbp ] ;then
 
 		echo "[info2] src_set $src_set has NOT been transfered yet , skipping prune" 1>&4
 
@@ -166,14 +161,14 @@ for child in "${dataset_array[@]}" ;do
 
 				for p in $p_list ;do
 
-					local p_snap_num="$($s_zfs get -s local,received -H -o value $pfix:snum $p)"
+					local p_num="$($s_zfs get -s local,received -H -o value $pfix:snum $p)"
 
-					if [ "$p_snap_num" -lt "$last_trans_snap_num" ] && [ "$s_type" = sbp ] ;then
+					if [ "$p_num" -lt "$last_trans_num" ] && [ "$s_type" = sbp ] ;then
 
 						echo "[info1] zfs destroy $p" 1>&3
 						$s_zfs destroy $p
 
-					elif [ "$p_snap_num" -lt "$last_snap_num" ] && [ "$s_type" = sp ] ;then
+					elif [ "$p_num" -lt "$last_src_num" ] && [ "$s_type" = sp ] ;then
 
 						echo "[info1] zfs destroy $p" 1>&3
 						$s_zfs destroy $p

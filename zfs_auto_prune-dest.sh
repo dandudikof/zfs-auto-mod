@@ -61,13 +61,13 @@ for child in "${dataset_array[@]}" ;do
 
 	else
 
-		local last_dest_snap_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set | tail -n 1)"
+		local last_dest_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set | tail -n 1)"
 
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-			echo "[DEBUG] last_dest_snap_num = ($last_dest_snap_num)" 1>&5
+			echo "[DEBUG] last_dest_num = ($last_dest_num)" 1>&5
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 			
-		if [ -z $last_dest_snap_num  ] ;then
+		if [ -z $last_dest_num  ] ;then
 
 			echo "[info2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
 
@@ -89,9 +89,9 @@ for child in "${dataset_array[@]}" ;do
 
 				for p in $p_list ;do
 
-					local p_snap_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
+					local p_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
 
-					if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
+					if [ "$p_num" -lt "$last_dest_num" ]  ;then
 
 						echo "[info1] zfs destroy $p" 1>&3
 						$d_zfs destroy $p
@@ -139,13 +139,13 @@ for child in "${dataset_array[@]}" ;do
 
 	else
 
-		local last_dest_snap_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set | tail -n 1)"
+		local last_dest_num="$($d_zfs get -t snapshot -s received -H -o value $pfix:snum $dest_set | tail -n 1)"
 
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
-			echo "[DEBUG] last_dest_snap_num = ($last_dest_snap_num)" 1>&5
+			echo "[DEBUG] last_dest_num = ($last_dest_num)" 1>&5
 			#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-		if  [ -z $last_dest_snap_num  ] ;then
+		if  [ -z $last_dest_num  ] ;then
 
 			echo "[info2] dest set $dest_set has NO auto snapshots , skipping prune" 1>&4
 
@@ -180,9 +180,9 @@ for child in "${dataset_array[@]}" ;do
 
 					for p in $p_list ;do
 
-						local p_snap_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
+						local p_num="$($d_zfs get -s received -H -o value $pfix:snum $p)"
 
-						if [ "$p_snap_num" -lt "$last_dest_snap_num" ]  ;then
+						if [ "$p_num" -lt "$last_dest_num" ]  ;then
 
 							echo "[info1] zfs destroy $p" 1>&3
 							$d_zfs destroy $p
