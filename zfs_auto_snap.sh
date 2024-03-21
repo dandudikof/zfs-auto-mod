@@ -66,7 +66,12 @@ for src_set in "${parent_array[@]}" ;do
 
 		echo "[info1] zfs snapshot $src_set@$pfix-parent" 1>&3
 
-		$s_zfs snapshot $src_set@$pfix-parent
+		local snap_opts1="-o $pfix:stype:p="
+		local snap_cmd="snapshot $snap_opts1 $src_set@$pfix-parent"
+
+		echo "[SNAP_CMD] ($snap_cmd)" 1>&5
+
+		$s_zfs $snap_cmd
 
 	fi
 
@@ -98,7 +103,7 @@ for src_set in "${dataset_array[@]}" ;do
 	local written_size="$($s_zfs get -H -p -o value written $src_set)"
 	local snap_check="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_sdate $src_set)"
 	local minws_check="$($s_zfs get -s local,received,inherited -H -o value $pfix:minws $src_set)"
-	local current_snap="$src_set@${pfix}-t1-${DATE}_${TIME}-n$snap_num"
+	local current_snap="$src_set@${pfix}-t1_${DATE}_${TIME}_n$snap_num"
 
 	[ -z "$minws_check" ] && minws_check=0
 
@@ -124,7 +129,13 @@ for src_set in "${dataset_array[@]}" ;do
 	else
 
 		echo "[info1] zfs snapshot $current_snap" 1>&3
-		$s_zfs snapshot -o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num $current_snap
+
+		local snap_opts1="-o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num"
+		local snap_cmd="snapshot $snap_opts1 $current_snap"
+
+		echo "[SNAP_CMD] ($snap_cmd)" 1>&5
+
+		$s_zfs $snap_cmd
 
 	fi
 
@@ -173,7 +184,7 @@ for src_set in "${dataset_array[@]}" ;do
 		local need_snap="$($s_zfs get -s local,received,inherited -H -o value $pfix:nsnap:$i $src_set)"
 		local snap_check="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_sdate $src_set)"
 		local minws_check="$($s_zfs get -s local,received,inherited -H -o value $pfix:minws:$i $src_set)"
-		local current_snap="$src_set@${pfix}-t2-${DATE}_${TIME}-${i}-n$snap_num"
+		local current_snap="$src_set@${pfix}-t2_${DATE}_${TIME}_${i}-n$snap_num"
 		
 		[ -z "$minws_check" ] && minws_check=0
 		
@@ -206,7 +217,12 @@ for src_set in "${dataset_array[@]}" ;do
 
 			echo "[info1] zfs snapshot $current_snap" 1>&3
 
-			$s_zfs snapshot -o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num $current_snap
+			local snap_opts1="-o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num"
+			local snap_cmd="snapshot $snap_opts1 $current_snap"
+
+			echo "[SNAP_CMD] ($snap_cmd)" 1>&5
+
+			$s_zfs $snap_cmd
 
 			break	# will take weekly daily hourly at next iteration. (not at same time)
 					# comented out will take them (at at same time)

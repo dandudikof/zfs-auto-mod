@@ -104,9 +104,9 @@ else
 
 	echo "[info1] zfs create $dest_set" 1>&3
 
-	local zfs_cmd="$d_zfs create -p -o mountpoint=none $dest_set"
-	echo "[ZFS_CMD] ($zfs_cmd)" 1>&5
-	$zfs_cmd
+	local create_cmd="create -p -o mountpoint=none $dest_set"
+	echo "[CREATE_CMD] ($create_cmd)" 1>&5
+	$d_zfs $create_cmd
 
 fi
 
@@ -145,14 +145,14 @@ else
 
 	echo "[info1] zfs p send $src_set@$pfix-parent" 1>&3
 
-	local zfs_send_cmd="$s_zfs send -pv $src_set@$pfix-parent"
-	local zfs_recv_cmd="$d_zfs recv -Fuv $dest_set"
+	local send_cmd="send -pv $src_set@$pfix-parent"
+	local recv_cmd="recv -Fuv $dest_set"
 
-	echo "[ZFS_SEND] ($zfs_send_cmd)" 1>&5
-	echo "[ZFS_RECV] ($zfs_recv_cmd)" 1>&5
+	echo "[SEND_CMD] ($send_cmd)" 1>&5
+	echo "[RECV_CMD] ($recv_cmd)" 1>&5
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
-	 $zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8
+	$s_zfs $send_cmd 2>&6 | $d_zfs $recv_cmd 1>&8
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
@@ -225,23 +225,23 @@ else
 		echo "[DEBUG] ($src_set) is a clone, and origin is ($orig_snap)" 1>&5
 		echo "[info1] zfs c send $orig_snap" 1>&3
 		echo "[info1] to ------> $head_snap" 1>&3
-		local zfs_send_cmd="$s_zfs send -pv -i $orig_snap $head_snap"
-		local zfs_recv_cmd="$d_zfs recv -uv $dest_set"
+		local send_cmd="send -pv -i $orig_snap $head_snap"
+		local recv_cmd="recv -uv $dest_set"
 
 	else
 
 		echo "[DEBUG] ($src_set) is not a clone, or origin is not on include list" 1>&5
 		echo "[info1] zfs h send $head_snap" 1>&3
-		local zfs_send_cmd="$s_zfs send -pv $head_snap"
-		local zfs_recv_cmd="$d_zfs recv -uv $dest_set"
+		local send_cmd="send -pv $head_snap"
+		local recv_cmd="recv -uv $dest_set"
 
 	fi
 
-	echo "[ZFS_SEND] ($zfs_send_cmd)" 1>&5
-	echo "[ZFS_RECV] ($zfs_recv_cmd)" 1>&5
+	echo "[SEND_CMD] ($send_cmd)" 1>&5
+	echo "[RECV_CMD] ($recv_cmd)" 1>&5
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
-	$zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8
+	$s_zfs $send_cmd 2>&6 | $d_zfs $recv_cmd 1>&8
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
@@ -251,9 +251,9 @@ else
 
 	elif [ "$d_type" = "pri" ] && [ -n "$head_snap_num" ] ;then
 
-		local zfs_cmd="$s_zfs set $pfix:tsnum=$head_snap_num $head_snap"
-		echo "[ZFS_CMD] ($zfs_cmd)" 1>&5
-		$zfs_cmd
+		local set_cmd="set $pfix:tsnum=$head_snap_num $head_snap"
+		echo "[SET_CMD] ($set_cmd)" 1>&5
+		$s_zfs $set_cmd
 
 	fi
 
@@ -355,14 +355,14 @@ else
 
 	[ "$d_force" = 1 ] && local F=F
 
-	local zfs_send_cmd="$s_zfs send -pv -I $match_snap $last_src_snap"
-	local zfs_recv_cmd="$d_zfs recv -${F}uv -x $pfix:tsnum $dest_set"
+	local send_cmd="send -pv -I $match_snap $last_src_snap"
+	local recv_cmd="recv -${F}uv -x $pfix:tsnum $dest_set"
 
-	echo "[ZFS_SEND] ($zfs_send_cmd)" 1>&5
-	echo "[ZFS_RECV] ($zfs_recv_cmd)" 1>&5
+	echo "[SEND_CMD] ($send_cmd)" 1>&5
+	echo "[RECV_CMD] ($recv_cmd)" 1>&5
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
-	 $zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8
+	 $s_zfs $send_cmd 2>&6 | $d_zfs $recv_cmd 1>&8
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
@@ -372,9 +372,9 @@ else
 
 	elif [ "$d_type" = pri ] && [ -n "$last_auto_snap_num" ] ;then
 
-		local zfs_cmd="$s_zfs set $pfix:tsnum=$last_auto_snap_num $last_auto_snap"
-		echo "[ZFS_CMD] ($zfs_cmd)" 1>&5
-		$zfs_cmd
+		local set_cmd="set $pfix:tsnum=$last_auto_snap_num $last_auto_snap"
+		echo "[SET_CMD] ($set_cmd)" 1>&5
+		$s_zfs $set_cmd
 
 	fi
 
