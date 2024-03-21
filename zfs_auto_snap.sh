@@ -67,7 +67,7 @@ for src_set in "${parent_array[@]}" ;do
 		echo "[info1] zfs snapshot $src_set@$pfix-parent" 1>&3
 
 		local snap_opts1="-o $pfix:stype:p="
-		local snap_opts2="-o zfs-auto-mod:v=$v"
+		local snap_opts2="-o zfs-auto-mod:v=$v -o zfs-auto-mod:d=$Yn:$my:$dm:$hd:$mh"
 		local snap_cmd="snapshot $snap_opts1 $snap_opts2 $src_set@$pfix-parent"
 
 		echo "[SNAP_CMD] ($snap_cmd)" 1>&5
@@ -132,7 +132,7 @@ for src_set in "${dataset_array[@]}" ;do
 		echo "[info1] zfs snapshot $current_snap" 1>&3
 
 		local snap_opts1="-o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num"
-		local snap_opts2="-o zfs-auto-mod:v=$v"
+		local snap_opts2="-o zfs-auto-mod:v=$v -o zfs-auto-mod:d=$Yn:$my:$dm:$hd:$mh"
 		local snap_cmd="snapshot $snap_opts1 $snap_opts2 $current_snap"
 
 		echo "[SNAP_CMD] ($snap_cmd)" 1>&5
@@ -220,7 +220,7 @@ for src_set in "${dataset_array[@]}" ;do
 			echo "[info1] zfs snapshot $current_snap" 1>&3
 
 			local snap_opts1="-o $pfix_stype= -o $pfix_sdate= -o $pfix:snum=$snap_num"
-			local snap_opts2="-o zfs-auto-mod:v=$v"
+			local snap_opts2="-o zfs-auto-mod:v=$v -o zfs-auto-mod:d=$Yn:$my:$dm:$hd:$mh"
 			local snap_cmd="snapshot $snap_opts1 $snap_opts2 $current_snap"
 
 			echo "[SNAP_CMD] ($snap_cmd)" 1>&5
