@@ -99,19 +99,22 @@ for src_set in "${dataset_array[@]}" ;do
 
 	((snap_num++))
 
+	[ $pofix_snum = 1 ] && local pofix_num="_n${snap_num}"
+
 	local pfix_stype="$pfix:stype:1"
 	local pfix_sdate="$pfix:sdate:$Yn:$my:$wy:$dm:$hd"
 	local written_size="$($s_zfs get -H -p -o value written $src_set)"
 	local need_snap="$($s_zfs get -s local,received,inherited -H -o value $pfix:nsnap $src_set)"
 	local snap_check="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_sdate $src_set)"
 	local minws_check="$($s_zfs get -s local,received,inherited -H -o value $pfix:minws $src_set)"
-	local current_snap="$src_set@${pfix}-t1_${DATE}_${TIME}_n$snap_num"
+	local current_snap="$src_set@${pfix}-t1_${DATE}_${TIME}${pofix_num}"
 
 	[ -z "$minws_check" ] && minws_check=0
 
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 		echo "[DEBUG] last_snap = ($last_snap)" 1>&5
 		echo "[DEBUG] snap_num = ($snap_num)" 1>&5
+		echo "[DEBUG] pofix_num = ($pofix_num)" 1>&5
 		echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 		echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 		echo "[DEBUG] written_size = ($written_size)" 1>&5
@@ -187,12 +190,14 @@ for src_set in "${dataset_array[@]}" ;do
 
 		((snap_num++))
 
+		[ $pofix_snum = 1 ] && local pofix_num="-n${snap_num}"
+
 		local pfix_stype="$pfix:stype:2:$i"
 		local written_size="$($s_zfs get -H -p -o value written $src_set)"
 		local need_snap="$($s_zfs get -s local,received,inherited -H -o value $pfix:nsnap:$i $src_set)"
 		local snap_check="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_sdate $src_set)"
 		local minws_check="$($s_zfs get -s local,received,inherited -H -o value $pfix:minws:$i $src_set)"
-		local current_snap="$src_set@${pfix}-t2_${DATE}_${TIME}_${i}-n$snap_num"
+		local current_snap="$src_set@${pfix}-t2_${DATE}_${TIME}_${i}${pofix_num}"
 		
 		[ -z "$minws_check" ] && minws_check=0
 		
@@ -200,6 +205,7 @@ for src_set in "${dataset_array[@]}" ;do
 			echo "[DEBUG] mwdh = ($mwdh)" 1>&5
 			echo "[DEBUG] last_snap = ($last_snap)" 1>&5
 			echo "[DEBUG] snap_num = ($snap_num)" 1>&5
+			echo "[DEBUG] pofix_num = ($pofix_num)" 1>&5
 			echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 			echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 			echo "[DEBUG] written_size = ($written_size)" 1>&5
