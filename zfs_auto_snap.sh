@@ -102,6 +102,7 @@ for src_set in "${dataset_array[@]}" ;do
 	local pfix_stype="$pfix:stype:1"
 	local pfix_sdate="$pfix:sdate:$Yn:$my:$wy:$dm:$hd"
 	local written_size="$($s_zfs get -H -p -o value written $src_set)"
+	local need_snap="$($s_zfs get -s local,received,inherited -H -o value $pfix:nsnap $src_set)"
 	local snap_check="$($s_zfs get -t snapshot -s local,received -H -o name $pfix_sdate $src_set)"
 	local minws_check="$($s_zfs get -s local,received,inherited -H -o value $pfix:minws $src_set)"
 	local current_snap="$src_set@${pfix}-t1_${DATE}_${TIME}_n$snap_num"
@@ -114,12 +115,17 @@ for src_set in "${dataset_array[@]}" ;do
 		echo "[DEBUG] pfix_stype = ($pfix_stype)" 1>&5
 		echo "[DEBUG] pfix_sdate = ($pfix_sdate)" 1>&5
 		echo "[DEBUG] written_size = ($written_size)" 1>&5
+		echo "[DEBUG] need_snap = ($need_snap)" 1>&5
 		echo "[DEBUG] snap_check = ($snap_check)" 1>&5
 		echo "[DEBUG] minws_check = ($minws_check)" 1>&5
 		echo "[DEBUG] current_snap = ($current_snap)" 1>&5
 		#echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 1>&5
 
-	if [ -n "$snap_check" ] ;then
+	if [ "$need_snap" = 0 ] ;then
+			
+		echo "[info2] snapshot $src_set disabled" 1>&4
+
+	elif [ -n "$snap_check" ] ;then
 
 		echo "[info2] snapshot $snap_check exists" 1>&4
 		
