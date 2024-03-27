@@ -152,7 +152,7 @@ else
 	echo "[RECV_CMD] ($recv_cmd)" 1>&5
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
-	$s_zfs $send_cmd 2>&6 | $d_zfs $recv_cmd 1>&8
+	do_transport
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
@@ -241,7 +241,7 @@ else
 	echo "[RECV_CMD] ($recv_cmd)" 1>&5
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
-	$s_zfs $send_cmd 2>&6 | $d_zfs $recv_cmd 1>&8
+	do_transport
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
@@ -258,6 +258,39 @@ else
 	fi
 
 fi
+
+}
+
+
+
+do_transport (){
+#printf "\n--------------------------------------( do_transport )------------------------------------------\n" 1>&4
+		# transport function for available mechanisms
+
+	#[ "$transport" != ssh ] && [ -z "$d_srv" ] && [ -z "$d_ip" ] && d_ip="$(hostname -I | tr -d '[:blank:]')"
+
+	echo "[info2] transport = ($transport)" 1>&4
+	echo "[info2] s_ip = ($d_ip) , d_ip = ($d_ip)" 1>&4
+
+	if [ "$transport" = ssh ] ;then
+		
+		($s_zfs $send_cmd 2>&6 | $d_zfs $recv_cmd 1>&8)
+
+	elif [ "$transport" = netcat ] ;then
+
+		($d_srv $netcat -w 5 $netcat_opts -l -p $port | $zfs $recv_cmd 1>&8) & sleep 1
+		($s_srv $zfs $send_cmd 2>&6 | $netcat -w 5 $netcat_opts -q 1 $d_ip $port)
+
+		wait $(jobs -p)
+
+	elif [ "$transport" = mbuffer ] ;then
+
+		($d_srv $mbuffer -W 5 $mbuffer_opts -q -I $port | $zfs $recv_cmd 1>&8) & sleep 1
+		($s_srv $zfs $send_cmd 2>&6 | $mbuffer -W 5 $mbuffer_opts -q -O ${d_ip}:${port})
+
+		wait $(jobs -p)
+
+	fi
 
 }
 
@@ -362,7 +395,7 @@ else
 	echo "[RECV_CMD] ($recv_cmd)" 1>&5
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
-	 $s_zfs $send_cmd 2>&6 | $d_zfs $recv_cmd 1>&8
+	do_transport
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
