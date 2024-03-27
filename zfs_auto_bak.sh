@@ -153,13 +153,11 @@ else
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 	 $zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8
-	local ret=( "${PIPESTATUS[@]}" )
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
-	if [ "${ret[0]}" != 0 ] || [ "${ret[1]}" != 0 ] ;then
+	if ! $d_zfs list -t snapshot -H -o name $dest_set@$pfix-parent > /dev/null 2>&1 ;then
 
-		echo "[DEBUG] zfs send pipeline returns are (${ret[@]})" 1>&5
 		echo "[ERROR] zfs send/recv fail for $src_set " 1>&3
 
 	fi
@@ -244,13 +242,11 @@ else
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 	$zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8
-	local ret=( "${PIPESTATUS[@]}" )
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
-	if [ "${ret[0]}" != 0 ] || [ "${ret[1]}" != 0 ] ;then
+	if ! $d_zfs list -t snapshot -H -o name $dest_set@${head_snap#*@} > /dev/null 2>&1 ;then
 
-		echo "[DEBUG] zfs send pipeline returns are (${ret[@]})" 1>&5
 		echo "[ERROR] zfs send/recv fail for $src_set " 1>&3
 
 	elif [ "$d_type" = "pri" ] && [ -n "$head_snap_num" ] ;then
@@ -367,13 +363,11 @@ else
 
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 	 $zfs_send_cmd 2>&6 | $zfs_recv_cmd 1>&8
-	local ret=( "${PIPESTATUS[@]}" )
 	sleep 0.1	# to sync logging in this spot, or it jumps order
 	echo "------------------------------------------------------------------------------------------------" 1>&9
 
-	if [ "${ret[0]}" != 0 ] || [ "${ret[1]}" != 0 ] ;then
+	if ! $d_zfs list -t snapshot -H -o name $dest_set@${last_src_snap#*@} > /dev/null 2>&1 ;then
 
-		echo "[DEBUG] zfs send pipeline returns are (${ret[@]})" 1>&5
 		echo "[ERROR] zfs send/recv fail for $src_set " 1>&3
 
 	elif [ "$d_type" = pri ] && [ -n "$last_auto_snap_num" ] ;then
