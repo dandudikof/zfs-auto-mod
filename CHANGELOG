@@ -1,0 +1,150 @@
+
+1.00.00 (tagged) - will branch 1.00.xx for fixes
+
+Added fnc_pool-check.sh 
+for status checks of pools before oprations 
+if pools health is not ONLINE (ie healthy) script exits 
+
+Added fnc_lock-check.sh
+for on a peer script peer config basis 
+to make sure that same script is not operating 
+on same config at the same time
+
+Updated config and function sourcing
+1)errors for failed config loading will show up in crontab/mail only
+as no logging is defined before config is sourced.
+2)errors for function sourcing will now show up after the 
+current log headder
+
+Added feature for source pool stripping on dest sets
+to allow direct pool to pool replication
+
+Fix for sending zfs volumes
+
+Split do_backup_dataset in to 3 functions
+1)do_backup_head for head snapshot send
+2)do_match_snap for finding last matching snap
+on source and destination for incremental sending
+3)do_backup_incr for incremental send
+
+Added pfix:excl zfs user property to server as 
+a proper override over inherited or local pfix:incl 
+to selectivley exclude sets
+
+Added clone send logic for initial identification
+and initial incremental send format  of clone datasets,
+so that they can remain clones on destination
+and a check and warning if origin of clone is not included 
+
+Fix moved do_remote_check before do_pool_check
+so that a pool check does not cause an exit of script
+if remote source and/or destination server needs to be woken up with do_remote_check
+
+Disabled default force push on incremental backups 
+and added it as an option d_foce in config file
+and a check and warning if source was rolled back and needs
+a force send or a rollback on destination
+
+Optimized fnc_pool-check.sh
+and disabled dest pool cheks when not needed
+
+Optimized fnc_remote-check.sh
+and disabled dest checks when not needed
+
+Added set checks to zfs_auto_prune-dest.sh
+
+Added set and snap checks to zfs_auto_bak.sh
+
+Cleaned up log formatting lines (make logging cleaner)
+
+Renamed [INFO1][INFO2] log line headers to [info1][info2] 
+to make [ERROR][DEBUG][STERR][WARNING] stand out 
+
+Cleaned up rest of logging so it is as clean as possible 
+and distinguishable under all conditions of verbosity
+
+Removed sort type2 as it was redundant now that sort type1 
+has an option of set_type to set default s_sets types
+(container,parent,dataset) overridable by zfs pfix:incl user propery.
+sort type3 (manual sort) moved to type2
+
+Removed snap type2 
+snap type3 moved to snap type2 as it has all the functionality
+and is capable of hourly snapshots. and an option for 
+override of zfs pfix:nsnap:[m,w,d,h]=[0,1] user propery to disable or enable
+monthly-weekly-daily-hourly snapshots on sets inheritable
+and overridable 
+
+Added optional recursive minws check to type 2 snapshots
+to set for each monthly weekly daily or hourly (written size)
+before snapshots are taken
+
+Added destination snapshot set@pfix-parent check 
+to force a resend of a parent set properties after
+parent snap was deleted on source (takes a new snap)
+parent snap was deleted on destination (sends over new snap)
+
+Added ../ set checks to stop backups atempts to nonexisting paths.
+
+Added clone aray re-sorting
+for clone of clone type of situation where ,
+origins need to be on list before clones themselves.
+
+FreeBSD fixes and tweaks
+Change formatting of zfs get to FreeBSD posix complaint getopts
+Add fnc_compatibility.sh for FreeBSD checks and shim funcions
+to use GNUs coreutils version of tac,tail,head
+
+Fix for missing last_src_num check in sbp prune-src
+
+Fix for false snap_num incrementing in do_snap_dataset2
+
+Updated log_dir and lock_dir locations and creation
+
+Changed send recv pipeline checks to dest snap checks instead
+to accomadate new transport of netcat and mbuffer.
+and seems more logical to test actual completion
+by snapshots existance on destination
+
+Merged sort_type1 and sort_type2
+merged functionality of sort_type1 and sort_type2
+added set_recurse config option to recurse in to s_sets.
+
+Added version controll 
+added v=1.01 variable in each script (for script use)
+added # v1.01 to config/* files (keep track when updating)
+changed logging headers to include script name and version
+added zfs-auto-mod:v=$v zfs user property to snapshots 
+(for future version migrations)
+
+Added date control
+added zfs-auto-mod:d=Yn:my:dm:hd:mh zfs user property to snapshots
+(to have actuall script parsable date and time)
+
+Added pfix_nsnap to snap_type 1
+as an option for keeping set in the include list 
+to facilitate backups, if someone or something 
+else it taking snapshots for said set and children
+
+Added pofix_snum as an option 
+to append snapshot number to end of snapshot name 
+
+1.01.00-rc1 (tagged)
+
+Added netcat and mbuffer as transports
+as preview and for testing 
+by adding new do_transport function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
